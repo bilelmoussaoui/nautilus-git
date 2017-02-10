@@ -10,8 +10,17 @@ def get_file_path(uri):
     return unquote(uri[7:])
 
 def is_git(folder_path):
-    git_folder = path.join(get_file_path(folder_path), ".git")
-    return path.exists(git_folder)
+    folder_path = get_file_path(folder_path)
+    git_folder = path.join(folder_path, ".git")
+    p = Popen('git rev-parse --is-inside-work-tree', shell=True, stdout=PIPE, stderr=PIPE, cwd=folder_path)
+    output = p.communicate()
+    output = output[0].decode("utf-8").strip().lower()
+    if path.exists(git_folder):
+        return True
+    elif output == "true":
+        return True
+    else:
+        return False
 
 def execute(git):
     p = Popen(git.cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=git.dir)
