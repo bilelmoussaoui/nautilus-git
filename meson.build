@@ -13,7 +13,6 @@ gir = dependency('gobject-introspection-1.0')
 gtk = dependency('gtk+-3.0', version : '>=3.10')
 
 
-conf.set('DATADIR', get_option('prefix') + '/' + get_option('datadir') + '/Authenticator/')
 message('DESTINATION DIR : ' + get_option('prefix'))
 
 
