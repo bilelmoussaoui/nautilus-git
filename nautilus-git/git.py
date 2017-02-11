@@ -9,11 +9,6 @@ from urllib import unquote
 from subprocess import PIPE, Popen
 from ConfigParser import ConfigParser
 from StringIO import StringIO
-import gettext
-
-_ = gettext.gettext
-
-gettext.textdomain('nautilus-git')
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -32,18 +27,7 @@ def is_git(folder_path):
     else:
         return False
 
-def get_main_git_folder(file_path):
-	file_path = file_path.split("/")
-	current_path = ""
-	for i in range(len(file_path) - 1, -1, -1):	
-		current_path = "/".join(file_path[0:i])
-		git_folder = path.join(current_path, ".git")
-		if path.exists(git_folder):
-			return current_path
-			break
-	return None
-
-def execute(git):	
+def execute(git):
     p = Popen(git.cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=git.dir)
     output = p.communicate()
     return output[0].decode("utf-8").strip()
@@ -54,9 +38,6 @@ class Git:
 
     def __init__(self, uri):
         self._dir = get_file_path(uri)
-        real_dir = get_main_git_folder(self._dir)
-        if real_dir:
-        	self._dir = real_dir
         self._cmd = ""
 
     @property
@@ -105,7 +86,7 @@ class NautilusPropertyPage(Gtk.Grid):
         self.show()
 
     def _build_widgets(self): 
-        branch = Gtk.Label(_('Branch:'))
+        branch = Gtk.Label('Branch:')
         branch.set_halign(Gtk.Align.END)
         branch.show()
 
@@ -152,7 +133,7 @@ class NautilusLocation(Gtk.InfoBar):
         self.get_content_area().add(container)
 
         remote_button = Gtk.Button()
-        remote_button.set_label(_("Open remote URL in a browser"))
+        remote_button.set_label("Open remote URL in a browser")
 
         remote_url = self._git.get_remote_url()
         remote_button.connect("clicked", self._open_remote_browser, remote_url)
@@ -193,7 +174,7 @@ class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider)
             uri = _file.get_uri()
             if is_git(uri):
                 git = Git(uri)
-                property_label = Gtk.Label(_('Git'))
+                property_label = Gtk.Label('Git')
                 property_label.show()
                 
                 nautilus_property = NautilusPropertyPage(git)

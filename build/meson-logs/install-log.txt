@@ -1,0 +1,4 @@
+# List of files installed by Meson
+# Does not contain files installed by custom scripts.
+/usr/share/icons/hicolor/scalable/status/nautilus-git-symbolic.svg
+/usr/share/nautilus-python/extensions/git.py
