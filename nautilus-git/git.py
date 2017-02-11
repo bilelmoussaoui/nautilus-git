@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-
-from gi import require_version
-require_version("Gtk", "3.0")
-require_version('Nautilus', '3.0')
-from gi.repository import Gtk, Nautilus, GObject, Gio
 from os import path
 from urllib import unquote
 from subprocess import PIPE, Popen
 from ConfigParser import ConfigParser
 from StringIO import StringIO
+from gi import require_version
+require_version("Gtk", "3.0")
+require_version('Nautilus', '3.0')
+from gi.repository import Gtk, Nautilus, GObject, Gio
+
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -25,6 +25,17 @@ def is_git(folder_path):
     else:
         return False
 
+def get_real_git_dir(directory):
+    dirs = directory.split("/")
+    current_path = ""
+    for i in range(len(dirs) - 1, 0, -1): 
+        current_path = "/".join(dirs[0:i])
+        git_folder = path.join(current_path, ".git")
+        if path.exists(git_folder):
+            return current_path
+            break
+    return None
+
 def execute(cmd, cd=None):
     if cd:
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=cd)
@@ -37,8 +48,12 @@ def execute(cmd, cd=None):
 class Git:
 
     def __init__(self, uri):
-        self._dir = get_file_path(uri)
-
+        _uri = get_file_path(uri)
+        uri = get_real_git_dir(_uri)
+        if uri:
+            self._dir = uri
+        else:
+            self._dir = _uri
     @property
     def dir(self):
         return self._dir
@@ -137,13 +152,13 @@ class NautilusLocation(Gtk.InfoBar):
         status = self._git.get_status()
 
         grid = self._build_status_widget(status)
-        container.attach(grid, 2, 0, 1 ,1)        
+        container.attach(grid, 2, 0, 1, 1)        
         remote_button = Gtk.Button()
         remote_button.set_label("Open remote URL in a browser")
 
         remote_url = self._git.get_remote_url()
         remote_button.connect("clicked", self._open_remote_browser, remote_url)
-        if remote_url.lower().startswith(("http://", "https://" , "wwww")):
+        if remote_url.lower().startswith(("http://", "https://", "wwww")):
            remote_button.show()
         self.get_action_area().add(remote_button)
 
