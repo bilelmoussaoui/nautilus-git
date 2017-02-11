@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import gettext
 from os import path
 from urllib import unquote
 from subprocess import PIPE, Popen
@@ -8,7 +9,8 @@ from gi import require_version
 require_version("Gtk", "3.0")
 require_version('Nautilus', '3.0')
 from gi.repository import Gtk, Nautilus, GObject, Gio
-
+_ = gettext.gettext
+gettext.textdomain('nautilus-git')
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -103,7 +105,7 @@ class NautilusPropertyPage(Gtk.Grid):
         self.show()
 
     def _build_widgets(self): 
-        branch = Gtk.Label('Branch:')
+        branch = Gtk.Label(_('Branch:'))
         branch.set_halign(Gtk.Align.END)
         branch.show()
 
@@ -154,7 +156,7 @@ class NautilusLocation(Gtk.InfoBar):
         grid = self._build_status_widget(status)
         container.attach(grid, 2, 0, 1, 1)        
         remote_button = Gtk.Button()
-        remote_button.set_label("Open remote URL in a browser")
+        remote_button.set_label(_("Open remote URL in a browser"))
 
         remote_url = self._git.get_remote_url()
         remote_button.connect("clicked", self._open_remote_browser, remote_url)
@@ -227,7 +229,7 @@ class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider)
             uri = _file.get_uri()
             if is_git(uri):
                 git = Git(uri)
-                property_label = Gtk.Label('Git')
+                property_label = Gtk.Label(_('Git'))
                 property_label.show()
                 
                 nautilus_property = NautilusPropertyPage(git)

@@ -7,4 +7,6 @@ if r.returncode() != 0
 endif
 
 langs = r.stdout().strip().split()
-i18n.gettext('nautilus-git', languages : langs)
+if langs.length() != 0
+	i18n.gettext('nautilus-git', languages : langs)
+endif
