@@ -17,9 +17,7 @@ def get_file_path(uri):
 def is_git(folder_path):
     folder_path = get_file_path(folder_path)
     git_folder = path.join(folder_path, ".git")
-    p = Popen('git rev-parse --is-inside-work-tree', shell=True, stdout=PIPE, stderr=PIPE, cwd=folder_path)
-    output = p.communicate()
-    output = output[0].decode("utf-8").strip().lower()
+    output = execute('git rev-parse --is-inside-work-tree', folder_path).lower()
     if path.exists(git_folder):
         return True
     elif output == "true":
@@ -27,30 +25,26 @@ def is_git(folder_path):
     else:
         return False
 
-def execute(git):
-    p = Popen(git.cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=git.dir)
+def execute(cmd, cd=None):
+    if cd:
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=cd)
+    else:
+        p = Popen(cmd, stdout=PIPE, stderr=PIPE)
     output = p.communicate()
     return output[0].decode("utf-8").strip()
-
 
 
 class Git:
 
     def __init__(self, uri):
         self._dir = get_file_path(uri)
-        self._cmd = ""
-
-    @property
-    def cmd(self):
-        return self._cmd
 
     @property
     def dir(self):
         return self._dir
 
     def get_branch(self):
-        self._cmd = 'git rev-parse --abbrev-ref HEAD'
-        return execute(self)
+        return execute('git rev-parse --abbrev-ref HEAD', self.dir)
 
     def get_project_name(self):
         file = path.join(self.dir, ".git", "config")
@@ -67,10 +61,18 @@ class Git:
         else:
             return None
 
-    def get_remote_url(self):
-        self._cmd = "git config --get remote.origin.url"
-        return execute(self)
+    def get_status(self):
+        modified = execute("git status | grep 'modified:' | wc -l", self.dir)
+        removed = execute("git status | grep 'deleted:' | wc -l", self.dir)
+        added = execute("git status | grep 'new file:' | wc -l", self.dir)
+        return {
+            'added': added,
+            'removed': removed,
+            'modified': modified
+        }
 
+    def get_remote_url(self):
+        return execute("git config --get remote.origin.url", self.dir)
 
 
 class NautilusPropertyPage(Gtk.Grid):
@@ -132,6 +134,10 @@ class NautilusLocation(Gtk.InfoBar):
         container.attach(label, 1, 0, 1, 1)
         self.get_content_area().add(container)
 
+        status = self._git.get_status()
+
+        grid = self._build_status_widget(status)
+        container.attach(grid, 2, 0, 1 ,1)        
         remote_button = Gtk.Button()
         remote_button.set_label("Open remote URL in a browser")
 
@@ -140,6 +146,38 @@ class NautilusLocation(Gtk.InfoBar):
         if remote_url.lower().startswith(("http://", "https://" , "wwww")):
            remote_button.show()
         self.get_action_area().add(remote_button)
+
+    def _build_status_widget(self, status):
+        infos = {
+            "added" : {
+                "icon" : "list-add-symbolic"
+            },
+            "removed" : {
+                "icon" : "list-remove-symbolic"
+            },
+            "modified": {
+                "icon" : "document-edit-symbolic"
+            }
+        }
+        i = 0
+        grid = Gtk.Grid()
+        grid.set_row_spacing(3)
+        grid.set_column_spacing(3)
+        grid.show()
+        for st in status:
+            if int(status[st]) > 0:
+                icon = Gio.ThemedIcon(name=infos[st]["icon"])
+                image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
+                image.show()
+                label = Gtk.Label()
+                label.set_text(status[st])
+                label.show()
+                grid.attach(image, i, 0, 1, 1)
+                i += 1
+                grid.attach(label, i, 0, 1, 1)
+                i += 1
+        return grid
+
 
     def _open_remote_browser(self, button, remote_url):
         Gio.app_info_launch_default_for_uri(remote_url)
