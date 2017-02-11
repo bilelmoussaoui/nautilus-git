@@ -115,7 +115,7 @@ class NautilusLocation(Gtk.InfoBar):
         container.set_column_spacing(6)
         container.show()
 
-        icon = Gio.ThemedIcon(name="gitg-symbolic")
+        icon = Gio.ThemedIcon(name="nautilus-git-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.SMALL_TOOLBAR)
         image.show()
         container.attach(image, 0, 0, 1, 1)
