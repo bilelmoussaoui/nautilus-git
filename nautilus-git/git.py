@@ -3,7 +3,7 @@ import gettext
 from os import path
 from urllib import unquote
 from subprocess import PIPE, Popen
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoSectionError
 from StringIO import StringIO
 from gi import require_version
 require_version("Gtk", "3.0")
@@ -70,11 +70,14 @@ class Git:
                 content = obj.readlines()
             obj.close()
             lines = [line.strip() for line in content]
-            cfg = ConfigParser()
-            buf = StringIO("\n".join(lines))
-            cfg.readfp(buf)
-            url = cfg.get('remote "origin"', "url")
-            return url.split("/")[-1].replace(".git", "")
+            try:
+                cfg = ConfigParser()
+                buf = StringIO("\n".join(lines))
+                cfg.readfp(buf)
+                url = cfg.get('remote "origin"', "url")
+                return url.split("/")[-1].replace(".git", "")
+            except NoSectionError, KeyError:
+                return None
         else:
             return None
 
