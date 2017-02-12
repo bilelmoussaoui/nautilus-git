@@ -74,7 +74,7 @@ class Git:
             buf = StringIO("\n".join(lines))
             cfg.readfp(buf)
             url = cfg.get('remote "origin"', "url")
-            return url.split("/")[-1]
+            return url.split("/")[-1].replace(".git", "")
         else:
             return None
 
@@ -123,7 +123,7 @@ class NautilusLocation(Gtk.InfoBar):
     def __init__(self, git):
         Gtk.InfoBar.__init__(self)
         self._git = git
-        self.set_message_type(Gtk.MessageType.OTHER)
+        self.set_message_type(Gtk.MessageType.QUESTION)
         self.show()
         self._build_widgets()
 
