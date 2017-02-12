@@ -61,7 +61,7 @@ class Git:
         return self._dir
 
     def get_branch(self):
-        return execute('git rev-parse --abbrev-ref HEAD', self.dir)
+        return execute("git symbolic-ref HEAD | sed 's!refs\/heads\/!!'", self.dir)
 
     def get_project_name(self):
         file = path.join(self.dir, ".git", "config")
@@ -244,4 +244,3 @@ class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider)
                 return Nautilus.PropertyPage(name="NautilusPython::git",
                                              label=property_label, 
                                              page=nautilus_property),
-    
