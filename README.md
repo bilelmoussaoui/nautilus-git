@@ -16,9 +16,10 @@ Nautilus extension to add important information about the current git directory
 - `meson`
 - `ninja`
 - `intltool`
-- `libgirepository1.0-dev` (Dpkg) / `gobject-introspection-devel` (RPM)
 - `gtk+-3.0`
-
+- `gobject-introspection`:
+  - Debian/Ubuntu : `libgirepository1.0-dev` 
+  - Fedora : `gobject-introspection-devel`
 
 ## How to install 
 1- Install requirements
