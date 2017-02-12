@@ -20,3 +20,4 @@ subdir('data/icons')
 subdir('po')
 
 install_data('nautilus-git/git.py',install_mode : false, install_dir: get_option('prefix') + '/share/nautilus-python/extensions/')
+meson.add_install_script('meson_post_install.sh')
