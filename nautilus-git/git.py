@@ -18,11 +18,8 @@ def get_file_path(uri):
 
 def is_git(folder_path):
     folder_path = get_file_path(folder_path)
-    git_folder = path.join(folder_path, ".git")
     output = execute('git rev-parse --is-inside-work-tree', folder_path).lower()
-    if path.exists(git_folder):
-        return True
-    elif output == "true":
+    if output == "true":
         return True
     else:
         return False
