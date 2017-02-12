@@ -170,13 +170,16 @@ class NautilusLocation(Gtk.InfoBar):
     def _build_status_widget(self, status):
         infos = {
             "added" : {
-                "icon" : "list-add-symbolic"
+                "icon" : "list-add-symbolic",
+                "tooltip": _("Added files")
             },
             "removed" : {
-                "icon" : "list-remove-symbolic"
+                "icon" : "list-remove-symbolic",
+                "tooltip": _("Removed files")
             },
             "modified": {
-                "icon" : "document-edit-symbolic"
+                "icon" : "document-edit-symbolic",
+                "tooltip": _("Modified files")
             }
         }
         i = 0
@@ -188,6 +191,7 @@ class NautilusLocation(Gtk.InfoBar):
             if int(status[st]) > 0:
                 icon = Gio.ThemedIcon(name=infos[st]["icon"])
                 image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
+                image.set_tooltip_text(infos[st]["tooltip"])
                 image.show()
                 label = Gtk.Label()
                 label.set_text(status[st])
