@@ -133,8 +133,8 @@ class NautilusLocation(Gtk.InfoBar):
     def _build_widgets(self):
         container = Gtk.Grid()            
         container.set_row_spacing(6)  
-        container.set_border_width(6)
         container.set_column_spacing(6)
+        container.set_valign(Gtk.Align.CENTER)
         container.show()
 
         icon = Gio.ThemedIcon(name="nautilus-git-symbolic")
