@@ -15,6 +15,9 @@ Nautilus extension to add important information about the current git directory
 ### Building dependencies
 - `meson`
 - `ninja`
+- `intltool`
+- `libgirepository1.0-dev` (Dpkg) / `gobject-introspection-devel` (RPM)
+- `gtk+-3.0`
 
 
 ## How to install 
@@ -30,7 +33,6 @@ cd nautilus-git
 mkdir build
 cd build
 meson .. --prefix /usr
-ninja
 sudo ninja install
 ``` 
 4- Restart Nautilus 
