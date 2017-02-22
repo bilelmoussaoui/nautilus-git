@@ -41,11 +41,11 @@ sudo ninja install
 nautilus -q
 ```
 
-### How to uninstall
+## How to uninstall
 
 1- Download the uninstallation file
 ```bash
-cd /tmp && wget -O - https://raw.githubusercontent.com/bil-elmoussaoui/nautilus-git/master/uninstall.sh
+cd /tmp && wget -O uninstall.sh https://raw.githubusercontent.com/bil-elmoussaoui/nautilus-git/master/uninstall.sh
 ```
 2- Make the file executable
 ```bash
