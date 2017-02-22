@@ -21,7 +21,16 @@ Nautilus extension to add important information about the current git directory
   - Debian/Ubuntu : `libgirepository1.0-dev` 
   - Fedora : `gobject-introspection-devel`
 
-## How to install 
+## How to install
+
+### Fedora 24/25/26
+```bash
+sudo dnf copr enable heikoada/nautilus-git
+sudo dnf install nautilus-git 
+```
+
+
+### Manual installation
 1- Install requirements
 
 2- Clone the repository 
