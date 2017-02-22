@@ -41,5 +41,22 @@ sudo ninja install
 nautilus -q
 ```
 
+### How to uninstall
+
+1- Download the uninstallation file
+```bash
+cd /tmp && wget -O - https://raw.githubusercontent.com/bil-elmoussaoui/nautilus-git/master/uninstall.sh
+```
+2- Make the file executable
+```bash
+chmod +x ./uninstall.sh
+```
+3- Run it!
+```bash
+sudo ./uninstall.sh /usr
+
+```
+PS : Replace `/usr` with whatever installation prefix you have chosen before.
+
 ## Credits
 The `nautilus-git-symbolic` icon was designed by gitg design team.
