@@ -13,11 +13,6 @@ from gi.repository import Gtk, Nautilus, GObject, Gio, GtkSource
 _ = gettext.gettext
 gettext.textdomain('nautilus-git')
 
-_LANGUAGES = {
-    "py" : "Python",
-    "vala": "Vala"
-}
-
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -97,8 +92,10 @@ class Git:
     
     def get_modified(self):
         modified = execute("{ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq", self.dir)
-        modified_files = modified.split("\n")
-        return modified_files
+        modified_files = modified.strip()
+        if modified_files:
+            return modified_files.split("\n")
+        return []
 
     def get_diff(self, filename):
         diff = execute("git diff {0}".format(filename), self.dir)
@@ -240,11 +237,15 @@ class NautilusLocation(Gtk.InfoBar):
            remote_button.show()
         box.add(remote_button)
 
-        diff_button = Gtk.Button()
-        diff_button.set_label(_("Compare commits"))
-        diff_button.connect("clicked", self._compare_commits)
-        diff_button.show()
-        box.add(diff_button)
+        files = self._git.get_modified()
+        print(files)
+
+        self._diff_button = Gtk.Button()
+        self._diff_button.set_label(_("Compare commits"))
+        self._diff_button.connect("clicked", self._compare_commits)
+        if len(files) > 0:
+            self._diff_button.show()
+            box.add(self._diff_button)
         
         self._popover.add(box)
 
@@ -299,7 +300,6 @@ class NautilusGitCompare(Gtk.Window):
         ext = path.splitext(file_name)[1].replace(".", "").lower()
         lang_manager = GtkSource.LanguageManager()
         language = lang_manager.guess_language(file_name, None)
-        print(language.get_name())
         diff = self._git.get_diff(file_name)
         buff = GtkSource.Buffer()
         buff.set_highlight_syntax(True)
