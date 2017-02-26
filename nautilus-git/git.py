@@ -8,9 +8,16 @@ from StringIO import StringIO
 from gi import require_version
 require_version("Gtk", "3.0")
 require_version('Nautilus', '3.0')
-from gi.repository import Gtk, Nautilus, GObject, Gio
+require_version('GtkSource', '3.0')
+from gi.repository import Gtk, Nautilus, GObject, Gio, GtkSource
 _ = gettext.gettext
 gettext.textdomain('nautilus-git')
+
+_LANGUAGES = {
+    "py" : "Python",
+    "vala": "Vala"
+}
+
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -87,6 +94,15 @@ class Git:
             'removed': removed,
             'modified': modified
         }
+    
+    def get_modified(self):
+        modified = execute("{ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq", self.dir)
+        modified_files = modified.split("\n")
+        return modified_files
+
+    def get_diff(self, filename):
+        diff = execute("git diff {0}".format(filename), self.dir)
+        return diff
 
     def get_remote_url(self):
         return execute("git config --get remote.origin.url", self.dir)
@@ -155,14 +171,17 @@ class NautilusLocation(Gtk.InfoBar):
 
         grid = self._build_status_widget(status)
         container.attach(grid, 2, 0, 1, 1)        
-        remote_button = Gtk.Button()
-        remote_button.set_label(_("Open remote URL in a browser"))
+        
 
-        remote_url = self._git.get_remote_url()
-        remote_button.connect("clicked", self._open_remote_browser, remote_url)
-        if remote_url.lower().startswith(("http://", "https://", "wwww")):
-           remote_button.show()
-        self.get_action_area().add(remote_button)
+        icon = Gio.ThemedIcon(name="open-menu-symbolic")
+        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.SMALL_TOOLBAR)
+        button = Gtk.Button()
+        button.set_image(image)
+        button.show()
+        self._generate_popover(button)
+        button.connect("clicked", self._trigger_popover)
+        
+        self.get_action_area().add(button)
 
     def _build_status_widget(self, status):
         infos = {
@@ -199,9 +218,111 @@ class NautilusLocation(Gtk.InfoBar):
                 i += 1
         return grid
 
+    def _trigger_popover(self, popover):
+        if self._popover.get_visible():
+            self._popover.hide()
+        else:
+            self._popover.show()
+
+    def _generate_popover(self, widget):
+        self._popover = Gtk.Popover()
+        self._popover.set_border_width(12)
+        self._popover.props.margin = 20
+        self._popover.set_relative_to(widget)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.show()
+        remote_button = Gtk.Button()
+        remote_button.set_label(_("Open remote URL"))
+
+        remote_url = self._git.get_remote_url()
+        remote_button.connect("clicked", self._open_remote_browser, remote_url)
+        if remote_url.lower().startswith(("http://", "https://", "wwww")):
+           remote_button.show()
+        box.add(remote_button)
+
+        diff_button = Gtk.Button()
+        diff_button.set_label(_("Compare commits"))
+        diff_button.connect("clicked", self._compare_commits)
+        diff_button.show()
+        box.add(diff_button)
+        
+        self._popover.add(box)
+
+    def _compare_commits(self, *args):
+        widget = NautilusGitCompare(self._git)
+        widget.show()
 
     def _open_remote_browser(self, button, remote_url):
         Gio.app_info_launch_default_for_uri(remote_url)
+
+
+class NautilusGitCompare(Gtk.Window):
+
+    def __init__(self, git):
+        self._git = git
+        Gtk.Window.__init__(self)
+        title = _("Comparing commits of {0}").format(self._git.get_project_name())
+        self.set_title(title)
+        self.set_default_size(600, 400)
+        self._build_headerbar(title)
+        GObject.type_register(GtkSource.View)
+        self._build_paned()
+        self.show_all()
+
+    def _build_headerbar(self, title):
+        self._hb = Gtk.HeaderBar()
+        self._hb.set_show_close_button(True)
+        self._hb.set_title(title)
+        # Build list of modified files
+        files = self._git.get_modified()
+        files.sort()
+        self._store = Gtk.ListStore(str)
+        for filename in files:
+            self._store.append([filename])
+        self._files = Gtk.ComboBox.new_with_model(self._store)
+        renderer_text = Gtk.CellRendererText()
+        self._files.pack_start(renderer_text, True)
+        self._files.add_attribute(renderer_text, "text", 0)
+        self._files.set_active(0)
+        self._files.connect("changed", self._on_file_changed)
+        self._hb.pack_start(self._files)
+        self.set_titlebar(self._hb)
+
+    def _on_file_changed(self, combobox):
+        tree_iter = combobox.get_active_iter()
+        if tree_iter:
+            model = combobox.get_model()
+            _file = model[tree_iter][0]
+            self.set_buffer(_file)
+            
+    def set_buffer(self, file_name):
+        ext = path.splitext(file_name)[1].replace(".", "").lower()
+        lang_manager = GtkSource.LanguageManager()
+        language = lang_manager.guess_language(file_name, None)
+        print(language.get_name())
+        diff = self._git.get_diff(file_name)
+        buff = GtkSource.Buffer()
+        buff.set_highlight_syntax(True)
+        buff.set_highlight_matching_brackets(True)
+        buff.set_language(language)
+        buff.props.text = diff
+        self._source.set_buffer(buff)
+
+    def _build_paned(self):
+        scrolled = Gtk.ScrolledWindow()
+        self._source = GtkSource.View()
+        scrolled.add_with_viewport(self._source)
+
+
+        self._source.set_highlight_current_line(True)
+        self._source.set_show_line_marks(True)
+        self._source.set_show_line_numbers(True)
+
+        _file = self._files.get_model()[0][0]
+        self.set_buffer(_file)
+        
+        self._source.show()
+        self.add(scrolled)
 
 class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider):
 

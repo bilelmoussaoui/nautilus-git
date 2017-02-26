@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-12 15:22+0100\n"
+"POT-Creation-Date: 2017-02-26 13:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: nautilus-git/git.py:111
+#: nautilus-git/git.py:124
 msgid "Branch:"
 msgstr ""
 
-#: nautilus-git/git.py:162
-msgid "Open remote URL in a browser"
-msgstr ""
-
-#: nautilus-git/git.py:174
+#: nautilus-git/git.py:190
 msgid "Added files"
 msgstr ""
 
-#: nautilus-git/git.py:178
+#: nautilus-git/git.py:194
 msgid "Removed files"
 msgstr ""
 
-#: nautilus-git/git.py:182
+#: nautilus-git/git.py:198
 msgid "Modified files"
 msgstr ""
 
-#: nautilus-git/git.py:239
+#: nautilus-git/git.py:235
+msgid "Open remote URL"
+msgstr ""
+
+#: nautilus-git/git.py:244
+msgid "Compare commits"
+msgstr ""
+
+#: nautilus-git/git.py:264
+#, python-brace-format
+msgid "Comparing commits of {0}"
+msgstr ""
+
+#: nautilus-git/git.py:357
 msgid "Git"
 msgstr ""
