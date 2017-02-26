@@ -13,6 +13,24 @@ from gi.repository import Gtk, Nautilus, GObject, Gio, GtkSource
 _ = gettext.gettext
 gettext.textdomain('nautilus-git')
 
+GIT_FILES_STATUS = {
+        "added" : {
+            "icon" : "list-add-symbolic",
+            "tooltip": _("Added files"),
+            "properties": _("Added :")
+        },
+        "removed" : {
+            "icon" : "list-remove-symbolic",
+            "tooltip": _("Removed files"),
+            "properties": _("Removed :")
+        },
+        "modified": {
+            "icon" : "document-edit-symbolic",
+            "tooltip": _("Modified files"),
+            "properties": _("Modified :")
+        }
+        }
+
 
 def get_file_path(uri):
     return unquote(uri[7:])
@@ -98,12 +116,19 @@ class Git:
         return []
 
     def get_diff(self, filename):
-        diff = execute("git diff {0}".format(filename), self.dir)
+        diff = execute("git diff --unified=0 {0}".format(filename), self.dir)
+        diff = diff.split("\n")[4:]
+        diff = "\n".join(diff)
         return diff
 
     def get_remote_url(self):
         return execute("git config --get remote.origin.url", self.dir)
 
+    def get_stat(self, filename):
+        stat = execute("git diff --stat {0}".format(filename), self.dir)
+        if stat:
+            return ", ".join(stat.split("\n")[1].split(",")[1:])
+        return None
 
 class NautilusPropertyPage(Gtk.Grid):
 
@@ -130,6 +155,22 @@ class NautilusPropertyPage(Gtk.Grid):
         branch_value.show()
 
         self.attach(branch_value, 1, 0, 1, 1)
+        status = self._git.get_status()
+        i = 2
+        for st in status:
+            if int(status[st]) > 0:
+                label = Gtk.Label()
+                label.set_text(GIT_FILES_STATUS[st]["properties"])
+                label.set_halign(Gtk.Align.END)
+                label.show()
+                self.attach(label, 0, i, 1, 1)
+
+                label_value = Gtk.Label()
+                label_value.set_text(status[st])
+                label_value.set_halign(Gtk.Align.END)
+                label_value.show()
+                self.attach(label_value, 1, i, 1, 1)
+                i += 1
 
 class NautilusLocation(Gtk.InfoBar):
 
@@ -171,30 +212,16 @@ class NautilusLocation(Gtk.InfoBar):
         
 
         icon = Gio.ThemedIcon(name="open-menu-symbolic")
-        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.SMALL_TOOLBAR)
+        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         button = Gtk.Button()
         button.set_image(image)
         button.show()
         self._generate_popover(button)
         button.connect("clicked", self._trigger_popover)
         
-        self.get_action_area().add(button)
+        self.get_action_area().pack_end(button, False, False, 0)
 
     def _build_status_widget(self, status):
-        infos = {
-            "added" : {
-                "icon" : "list-add-symbolic",
-                "tooltip": _("Added files")
-            },
-            "removed" : {
-                "icon" : "list-remove-symbolic",
-                "tooltip": _("Removed files")
-            },
-            "modified": {
-                "icon" : "document-edit-symbolic",
-                "tooltip": _("Modified files")
-            }
-        }
         i = 0
         grid = Gtk.Grid()
         grid.set_row_spacing(3)
@@ -202,9 +229,9 @@ class NautilusLocation(Gtk.InfoBar):
         grid.show()
         for st in status:
             if int(status[st]) > 0:
-                icon = Gio.ThemedIcon(name=infos[st]["icon"])
+                icon = Gio.ThemedIcon(name=GIT_FILES_STATUS[st]["icon"])
                 image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
-                image.set_tooltip_text(infos[st]["tooltip"])
+                image.set_tooltip_text(GIT_FILES_STATUS[st]["tooltip"])
                 image.show()
                 label = Gtk.Label()
                 label.set_text(status[st])
@@ -238,8 +265,7 @@ class NautilusLocation(Gtk.InfoBar):
         box.add(remote_button)
 
         files = self._git.get_modified()
-        print(files)
-
+        
         self._diff_button = Gtk.Button()
         self._diff_button.set_label(_("Compare commits"))
         self._diff_button.connect("clicked", self._compare_commits)
@@ -251,10 +277,13 @@ class NautilusLocation(Gtk.InfoBar):
 
     def _compare_commits(self, *args):
         widget = NautilusGitCompare(self._git)
+        self._popover.hide()
         widget.show()
+
 
     def _open_remote_browser(self, button, remote_url):
         Gio.app_info_launch_default_for_uri(remote_url)
+        self._popover.hide()
 
 
 class NautilusGitCompare(Gtk.Window):
@@ -297,7 +326,6 @@ class NautilusGitCompare(Gtk.Window):
             self.set_buffer(_file)
             
     def set_buffer(self, file_name):
-        ext = path.splitext(file_name)[1].replace(".", "").lower()
         lang_manager = GtkSource.LanguageManager()
         language = lang_manager.guess_language(file_name, None)
         diff = self._git.get_diff(file_name)
@@ -307,22 +335,33 @@ class NautilusGitCompare(Gtk.Window):
         buff.set_language(language)
         buff.props.text = diff
         self._source.set_buffer(buff)
+        stat = self._git.get_stat(file_name)
+        if stat:
+            self._label.set_text(stat)
+            self._label.show()
 
     def _build_paned(self):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+
         scrolled = Gtk.ScrolledWindow()
         self._source = GtkSource.View()
         scrolled.add_with_viewport(self._source)
-
-
+        self._label = Gtk.Label()
+        self._label.set_halign(Gtk.Align.START)
+        self._label.props.margin =6
         self._source.set_highlight_current_line(True)
         self._source.set_show_line_marks(True)
-        self._source.set_show_line_numbers(True)
+        self._source.set_background_pattern(GtkSource.BackgroundPatternType.GRID)
+        self._source.set_draw_spaces(GtkSource.DrawSpacesFlags.TRAILING)
 
         _file = self._files.get_model()[0][0]
         self.set_buffer(_file)
         
         self._source.show()
-        self.add(scrolled)
+        box.pack_start(self._label, False, False, 0)
+        box.pack_start(scrolled, True, True, 0)
+        box.show()
+        self.add(box)
 
 class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider):
 

@@ -11,8 +11,6 @@ glib = dependency('glib-2.0')
 gobject = dependency('gobject-2.0')
 gir = dependency('gobject-introspection-1.0')
 gtk = dependency('gtk+-3.0', version : '>=3.10')
-
-
 message('DESTINATION DIR : ' + get_option('prefix'))
 
 
