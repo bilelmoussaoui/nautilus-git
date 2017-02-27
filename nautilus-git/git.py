@@ -52,7 +52,6 @@ def get_real_git_dir(directory):
         git_folder = path.join(current_path, ".git")
         if path.exists(git_folder):
             return current_path
-            break
     return None
 
 def execute(cmd, cd=None):
@@ -210,11 +209,8 @@ class NautilusLocation(Gtk.InfoBar):
         grid = self._build_status_widget(status)
         container.attach(grid, 2, 0, 1, 1)        
         
-
-        icon = Gio.ThemedIcon(name="open-menu-symbolic")
-        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         button = Gtk.Button()
-        button.set_image(image)
+        button.set_label(_("More..."))
         button.show()
         self._generate_popover(button)
         button.connect("clicked", self._trigger_popover)
@@ -251,13 +247,13 @@ class NautilusLocation(Gtk.InfoBar):
     def _generate_popover(self, widget):
         self._popover = Gtk.Popover()
         self._popover.set_border_width(12)
-        self._popover.props.margin = 20
         self._popover.set_relative_to(widget)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box.show()
         remote_button = Gtk.Button()
+        remote_button.set_halign(Gtk.Align.START)
         remote_button.set_label(_("Open remote URL"))
-
+        remote_button.get_style_context().add_class("flat")
         remote_url = self._git.get_remote_url()
         remote_button.connect("clicked", self._open_remote_browser, remote_url)
         if remote_url.lower().startswith(("http://", "https://", "wwww")):
@@ -267,6 +263,8 @@ class NautilusLocation(Gtk.InfoBar):
         files = self._git.get_modified()
         
         self._diff_button = Gtk.Button()
+        self._diff_button.set_halign(Gtk.Align.START)
+        self._diff_button.get_style_context().add_class("flat")
         self._diff_button.set_label(_("Compare commits"))
         self._diff_button.connect("clicked", self._compare_commits)
         if len(files) > 0:
