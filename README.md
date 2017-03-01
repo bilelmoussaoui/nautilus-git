@@ -20,8 +20,8 @@ Nautilus extension to add important information about the current git directory
 - `gtk+-3.0`
 - `gobject-introspection`:
   - Debian/Ubuntu : `libgirepository1.0-dev` 
-  - Fedora : `gobject-introspection-devel`
-  - ArchLinux :  `gobject-introspection`
+  - Fedora : `gobject-introspection-devel` 
+  - ArchLinux :  `gobject-introspection`
 
 ## How to install
 
