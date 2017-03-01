@@ -1,4 +1,23 @@
 #!/usr/bin/python3
+"""
+Nautilus git pluging to show useful information under any
+git directory
+
+Author : Bilal Elmoussaoui (bil.elmoussaoui@gmail.com)
+Version : 1.0
+Website : https://github.com/bil-elmoussaoui/nautilus-git
+Licence : GPL3
+nautilus-git is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+nautilus-git is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
+"""
 import gettext
 from os import path
 from urllib import unquote
@@ -14,57 +33,59 @@ _ = gettext.gettext
 gettext.textdomain('nautilus-git')
 
 GIT_FILES_STATUS = {
-        "added" : {
-            "icon" : "list-add-symbolic",
-            "tooltip": _("Added files"),
-            "properties": _("Added :")
-        },
-        "removed" : {
-            "icon" : "list-remove-symbolic",
-            "tooltip": _("Removed files"),
-            "properties": _("Removed :")
-        },
-        "modified": {
-            "icon" : "document-edit-symbolic",
-            "tooltip": _("Modified files"),
-            "properties": _("Modified :")
-        }
-        }
+    "added" : {
+        "icon" : "list-add-symbolic",
+        "tooltip": _("Added files"),
+        "properties": _("Added :")
+    },
+    "removed" : {
+        "icon" : "list-remove-symbolic",
+        "tooltip": _("Removed files"),
+        "properties": _("Removed :")
+    },
+    "modified": {
+        "icon" : "document-edit-symbolic",
+        "tooltip": _("Modified files"),
+        "properties": _("Modified :")
+    }
+}
 
 
 def get_file_path(uri):
+    """Return file path from an uri."""
     return unquote(uri[7:])
 
 
 def is_git(folder_path):
+    """Verify if the current folder_path is a git directory."""
     folder_path = get_file_path(folder_path)
     output = execute('git rev-parse --is-inside-work-tree', folder_path).lower()
-    if output == "true":
-        return True
-    else:
-        return False
+    return output == "true"
 
 def get_real_git_dir(directory):
+    """Return the absolute path of the .git folder."""
     dirs = directory.split("/")
     current_path = ""
-    for i in range(len(dirs) - 1, 0, -1): 
+    for i in range(len(dirs) - 1, 0, -1):
         current_path = "/".join(dirs[0:i])
         git_folder = path.join(current_path, ".git")
         if path.exists(git_folder):
             return current_path
     return None
 
-def execute(cmd, cd=None):
-    if cd:
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=cd)
+def execute(cmd, working_dir=None):
+    """Execute a shell command."""
+    if working_dir:
+        command = Popen(cmd, shell=True, stdout=PIPE,
+                        stderr=PIPE, cwd=working_dir)
     else:
-        p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    output = p.communicate()
-    return output[0].decode("utf-8").strip()
+        command = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    output = command.communicate()[0]
+    return output.decode("utf-8").strip()
 
 
 class Git:
-
+    """Main Git class."""
     def __init__(self, uri):
         _uri = get_file_path(uri)
         uri = get_real_git_dir(_uri)
@@ -74,15 +95,18 @@ class Git:
             self._dir = _uri
     @property
     def dir(self):
+        """Property: dir."""
         return self._dir
 
     def get_branch(self):
-        return execute("git symbolic-ref HEAD | sed 's!refs\/heads\/!!'", self.dir)
+        """Return branch name."""
+        return execute(r"git symbolic-ref HEAD | sed 's!refs\/heads\/!!'", self.dir)
 
     def get_project_name(self):
-        file = path.join(self.dir, ".git", "config")
-        if path.exists(file):
-            with open(file, 'r') as obj:
+        """Return project name if found."""
+        config_file = path.join(self.dir, ".git", "config")
+        if path.exists(config_file):
+            with open(config_file, 'r') as obj:
                 content = obj.readlines()
             obj.close()
             lines = [line.strip() for line in content]
@@ -92,12 +116,13 @@ class Git:
                 cfg.readfp(buf)
                 url = cfg.get('remote "origin"', "url")
                 return url.split("/")[-1].replace(".git", "")
-            except NoSectionError, KeyError:
+            except (NoSectionError, KeyError):
                 return None
         else:
             return None
 
     def get_status(self):
+        """Return a dict with a count of added/modified/removed files."""
         modified = execute("git status | grep 'modified:' | wc -l", self.dir)
         removed = execute("git status | grep 'deleted:' | wc -l", self.dir)
         added = execute("git status | grep 'new file:' | wc -l", self.dir)
@@ -106,31 +131,34 @@ class Git:
             'removed': removed,
             'modified': modified
         }
-    
+
     def get_modified(self):
-        modified = execute("{ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq", self.dir)
-        modified_files = modified.strip()
-        if modified_files:
-            return modified_files.split("\n")
+        """Return a list of files that have been modified."""
+        modified = execute("{ git diff --name-only ; git diff "
+                           "--name-only --staged ; } | sort | uniq", self.dir)
+        if modified:
+            return modified.split("\n")
         return []
 
     def get_diff(self, filename):
-        diff = execute("git diff --unified=0 {0}".format(filename), self.dir)
-        diff = diff.split("\n")[4:]
-        diff = "\n".join(diff)
-        return diff
+        """Return the diff bettween the current file and HEAD."""
+        diff = execute("git diff --unified=0 {0}".format(filename),
+                       self.dir).split("\n")[4:]
+        return "\n".join(diff)
 
     def get_remote_url(self):
+        """Return remote url."""
         return execute("git config --get remote.origin.url", self.dir)
 
     def get_stat(self, filename):
+        """Return file stat line added/removed."""
         stat = execute("git diff --stat {0}".format(filename), self.dir)
         if stat:
             return ", ".join(stat.split("\n")[1].split(",")[1:])
         return None
 
 class NautilusPropertyPage(Gtk.Grid):
-
+    """Property page main widget class."""
     def __init__(self, git):
         Gtk.Grid.__init__(self)
         self._git = git
@@ -141,7 +169,8 @@ class NautilusPropertyPage(Gtk.Grid):
         self._build_widgets()
         self.show()
 
-    def _build_widgets(self): 
+    def _build_widgets(self):
+        """Build needed widgets."""
         branch = Gtk.Label(_('Branch:'))
         branch.set_halign(Gtk.Align.END)
         branch.show()
@@ -156,22 +185,25 @@ class NautilusPropertyPage(Gtk.Grid):
         self.attach(branch_value, 1, 0, 1, 1)
         status = self._git.get_status()
         i = 2
-        for st in status:
-            if int(status[st]) > 0:
+        for _status in status:
+            if int(status[_status]) > 0:
                 label = Gtk.Label()
-                label.set_text(GIT_FILES_STATUS[st]["properties"])
+                label.set_text(GIT_FILES_STATUS[_status]["properties"])
                 label.set_halign(Gtk.Align.END)
                 label.show()
                 self.attach(label, 0, i, 1, 1)
 
                 label_value = Gtk.Label()
-                label_value.set_text(status[st])
+                label_value.set_text(status[_status])
                 label_value.set_halign(Gtk.Align.END)
                 label_value.show()
                 self.attach(label_value, 1, i, 1, 1)
                 i += 1
 
 class NautilusLocation(Gtk.InfoBar):
+    """Location bar main widget."""
+    _popover = None
+    _diff_button = None
 
     def __init__(self, git):
         Gtk.InfoBar.__init__(self)
@@ -181,8 +213,9 @@ class NautilusLocation(Gtk.InfoBar):
         self._build_widgets()
 
     def _build_widgets(self):
-        container = Gtk.Grid()            
-        container.set_row_spacing(6)  
+        """Build needed widgets."""
+        container = Gtk.Grid()
+        container.set_row_spacing(6)
         container.set_column_spacing(6)
         container.set_valign(Gtk.Align.CENTER)
         container.show()
@@ -207,30 +240,32 @@ class NautilusLocation(Gtk.InfoBar):
         status = self._git.get_status()
 
         grid = self._build_status_widget(status)
-        container.attach(grid, 2, 0, 1, 1)        
-        
+        container.attach(grid, 2, 0, 1, 1)
+
         button = Gtk.Button()
         button.set_label(_("More..."))
         button.show()
         self._generate_popover(button)
         button.connect("clicked", self._trigger_popover)
-        
+
         self.get_action_area().pack_end(button, False, False, 0)
 
-    def _build_status_widget(self, status):
+    @staticmethod
+    def _build_status_widget(status):
+        """Build a widget, contains a counter of modified/added/removed files."""
         i = 0
         grid = Gtk.Grid()
         grid.set_row_spacing(3)
         grid.set_column_spacing(3)
         grid.show()
-        for st in status:
-            if int(status[st]) > 0:
-                icon = Gio.ThemedIcon(name=GIT_FILES_STATUS[st]["icon"])
+        for _status in status:
+            if int(status[_status]) > 0:
+                icon = Gio.ThemedIcon(name=GIT_FILES_STATUS[_status]["icon"])
                 image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
-                image.set_tooltip_text(GIT_FILES_STATUS[st]["tooltip"])
+                image.set_tooltip_text(GIT_FILES_STATUS[_status]["tooltip"])
                 image.show()
                 label = Gtk.Label()
-                label.set_text(status[st])
+                label.set_text(status[_status])
                 label.show()
                 grid.attach(image, i, 0, 1, 1)
                 i += 1
@@ -238,13 +273,15 @@ class NautilusLocation(Gtk.InfoBar):
                 i += 1
         return grid
 
-    def _trigger_popover(self, popover):
+    def _trigger_popover(self, *args):
+        """Show/hide popover."""
         if self._popover.get_visible():
             self._popover.hide()
         else:
             self._popover.show()
 
     def _generate_popover(self, widget):
+        """Create the popover."""
         self._popover = Gtk.Popover()
         self._popover.set_border_width(12)
         self._popover.set_relative_to(widget)
@@ -257,11 +294,11 @@ class NautilusLocation(Gtk.InfoBar):
         remote_url = self._git.get_remote_url()
         remote_button.connect("clicked", self._open_remote_browser, remote_url)
         if remote_url.lower().startswith(("http://", "https://", "wwww")):
-           remote_button.show()
+            remote_button.show()
         box.add(remote_button)
 
         files = self._git.get_modified()
-        
+
         self._diff_button = Gtk.Button()
         self._diff_button.set_halign(Gtk.Align.START)
         self._diff_button.get_style_context().add_class("flat")
@@ -270,22 +307,24 @@ class NautilusLocation(Gtk.InfoBar):
         if len(files) > 0:
             self._diff_button.show()
             box.add(self._diff_button)
-        
+
         self._popover.add(box)
 
     def _compare_commits(self, *args):
+        """Compare commits widget creation."""
         widget = NautilusGitCompare(self._git)
         self._popover.hide()
         widget.show()
 
 
     def _open_remote_browser(self, button, remote_url):
+        """Open the remote url on the default browser."""
         Gio.app_info_launch_default_for_uri(remote_url)
         self._popover.hide()
 
 
 class NautilusGitCompare(Gtk.Window):
-
+    """Nautilus diff window."""
     def __init__(self, git):
         self._git = git
         Gtk.Window.__init__(self)
@@ -294,10 +333,11 @@ class NautilusGitCompare(Gtk.Window):
         self.set_default_size(600, 400)
         self._build_headerbar(title)
         GObject.type_register(GtkSource.View)
-        self._build_paned()
+        self._build_main()
         self.show_all()
 
     def _build_headerbar(self, title):
+        """Generate the headerbar."""
         self._hb = Gtk.HeaderBar()
         self._hb.set_show_close_button(True)
         self._hb.set_title(title)
@@ -317,13 +357,15 @@ class NautilusGitCompare(Gtk.Window):
         self.set_titlebar(self._hb)
 
     def _on_file_changed(self, combobox):
+        """File selection changed signal handler."""
         tree_iter = combobox.get_active_iter()
         if tree_iter:
             model = combobox.get_model()
             _file = model[tree_iter][0]
             self.set_buffer(_file)
-            
+
     def set_buffer(self, file_name):
+        """Set the current content to the buffer of the file."""
         lang_manager = GtkSource.LanguageManager()
         language = lang_manager.guess_language(file_name, None)
         diff = self._git.get_diff(file_name)
@@ -338,7 +380,8 @@ class NautilusGitCompare(Gtk.Window):
             self._label.set_text(stat)
             self._label.show()
 
-    def _build_paned(self):
+    def _build_main(self):
+        """Build main widgets."""
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
         scrolled = Gtk.ScrolledWindow()
@@ -346,7 +389,7 @@ class NautilusGitCompare(Gtk.Window):
         scrolled.add_with_viewport(self._source)
         self._label = Gtk.Label()
         self._label.set_halign(Gtk.Align.START)
-        self._label.props.margin =6
+        self._label.props.margin = 6
         self._source.set_highlight_current_line(True)
         self._source.set_show_line_marks(True)
         self._source.set_background_pattern(GtkSource.BackgroundPatternType.GRID)
@@ -354,7 +397,7 @@ class NautilusGitCompare(Gtk.Window):
 
         _file = self._files.get_model()[0][0]
         self.set_buffer(_file)
-        
+
         self._source.show()
         box.pack_start(self._label, False, False, 0)
         box.pack_start(scrolled, True, True, 0)
@@ -362,12 +405,13 @@ class NautilusGitCompare(Gtk.Window):
         self.add(box)
 
 class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider):
-
+    """Location widget extension."""
     def __init__(self):
         self.window = None
         self.uri = None
 
     def get_widget(self, uri, window):
+        """Overwrite get_widget method."""
         self.uri = uri
         self.window = window
         if is_git(uri):
@@ -379,13 +423,16 @@ class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider
 
 
 class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider):
+    """Property widget extension."""
     def __init__(self):
         pass
-    
-    def get_property_pages(self, files):
+
+    @staticmethod
+    def get_property_pages(files):
+        """Overwrite default method."""
         if len(files) != 1:
             return
-        
+
         _file = files[0]
         if _file.is_directory():
             uri = _file.get_uri()
@@ -393,9 +440,9 @@ class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider)
                 git = Git(uri)
                 property_label = Gtk.Label(_('Git'))
                 property_label.show()
-                
+
                 nautilus_property = NautilusPropertyPage(git)
-                
+
                 return Nautilus.PropertyPage(name="NautilusPython::git",
-                                             label=property_label, 
+                                             label=property_label,
                                              page=nautilus_property),

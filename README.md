@@ -8,9 +8,9 @@ Nautilus extension to add important information about the current git directory
 
 ## Requirements:
 ### Runing dependecies
-- `python2` : I would use Python3 but Nautilus extensions works only with Python2
+- `python2`
 - `nautilus-python`:
-  - ArchLinux : `python2-nautilus`
+  - Archlinux : `python2-nautilus`
 - `git`
 
 ### Building dependencies
@@ -21,7 +21,7 @@ Nautilus extension to add important information about the current git directory
 - `gobject-introspection`:
   - Debian/Ubuntu : `libgirepository1.0-dev` 
   - Fedora : `gobject-introspection-devel` 
-  - ArchLinux :  `gobject-introspection`
+  - Archlinux :  `gobject-introspection`
 
 ## How to install
 
@@ -36,7 +36,7 @@ sudo add-apt-repository ppa:khurshid-alam/nautilus-git
 sudo apt-get update
 sudo apt-get install nautilus-git
 ```
-### ArchLinux
+### Archlinux
 ```bash
 yaourt -S nautilus-ext-git
 ```
