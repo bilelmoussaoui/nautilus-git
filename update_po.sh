@@ -15,10 +15,9 @@ find ${BASEDIR}/nautilus-git -name '*.py' | xgettext \
 
 
 # Merge the messages with existing po files
-echo "Merging with existing translations... "
 po_files=$(find ${BASEDIR}/po/ -name "*.po")
-
 if [ ${#po_files[@]} != 0 ]; then
+  echo "Merging with existing translations..."
   for file in $po_files
   do
     echo -n $file
