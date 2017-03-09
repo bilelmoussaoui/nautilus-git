@@ -20,7 +20,7 @@ along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
 import gettext
 from os import path
-from urllib import unquote
+from urlparse import urlsplit
 from subprocess import PIPE, Popen
 from ConfigParser import ConfigParser, NoSectionError
 from StringIO import StringIO
@@ -53,14 +53,18 @@ GIT_FILES_STATUS = {
 
 def get_file_path(uri):
     """Return file path from an uri."""
-    return unquote(uri[7:])
-
+    url = urlsplit(uri)
+    if url.scheme.lower() == "file":
+        return url.path
+    return None
 
 def is_git(folder_path):
     """Verify if the current folder_path is a git directory."""
     folder_path = get_file_path(folder_path)
-    output = execute('git rev-parse --is-inside-work-tree', folder_path).lower()
-    return output == "true"
+    if folder_path:
+        output = execute('git rev-parse --is-inside-work-tree', folder_path).lower()
+        return output == "true"
+    return None
 
 def get_real_git_dir(directory):
     """Return the absolute path of the .git folder."""
