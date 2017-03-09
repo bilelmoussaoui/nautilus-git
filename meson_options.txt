@@ -1,1 +1,1 @@
-option('post_install', type: 'boolean', value:'true')
+option('post_install', type : 'boolean', value : 'true')
