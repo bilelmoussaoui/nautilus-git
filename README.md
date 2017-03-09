@@ -5,6 +5,9 @@ Nautilus extension to add important information about the current git directory
 
  <div align="center"><img src="screenshots/screenshot1.png" alt="Preview" /></div>
 
+ <div align="center"><img src="screenshots/screenshot2.png" alt="Preview" /></div>
+
+
 
 ## Requirements:
 ### Runing dependecies
