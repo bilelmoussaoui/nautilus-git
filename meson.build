@@ -1,4 +1,4 @@
-project('nautilus-git', 'c', version: '0.1.1')
+project('nautilus-git', 'c', version: '1.1')
 
 conf = configuration_data()
 python = find_program('python2')
