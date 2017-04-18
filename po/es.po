@@ -1,0 +1,68 @@
+# Spanish translation for nautilus-git.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the nautilus-git package.
+# Adolfo Jayme Barrientos <fitojb@ubuntu.com>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-17 17:32-0500\n"
+"PO-Revision-Date: 2017-04-17 17:36-0500\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.1\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: es\n"
+
+#: nautilus-git/git.py:38
+msgid "Added files"
+msgstr "Archivos añadidos"
+
+#: nautilus-git/git.py:39
+msgid "Added :"
+msgstr "Añadidos:"
+
+#: nautilus-git/git.py:43
+msgid "Removed files"
+msgstr "Archivos quitados"
+
+#: nautilus-git/git.py:44
+msgid "Removed :"
+msgstr "Quitados:"
+
+#: nautilus-git/git.py:48
+msgid "Modified files"
+msgstr "Archivos modificados"
+
+#: nautilus-git/git.py:49
+msgid "Modified :"
+msgstr "Modificados:"
+
+#: nautilus-git/git.py:178
+msgid "Branch:"
+msgstr "Rama:"
+
+#: nautilus-git/git.py:250
+msgid "More..."
+msgstr "Más…"
+
+#: nautilus-git/git.py:296
+msgid "Open remote URL"
+msgstr "Abrir un URL remoto"
+
+#: nautilus-git/git.py:309
+msgid "Compare commits"
+msgstr "Comparar envíos"
+
+#: nautilus-git/git.py:335
+#, python-brace-format
+msgid "Comparing commits of {0}"
+msgstr "Comparación de envíos de {0}"
+
+#: nautilus-git/git.py:445
+msgid "Git"
+msgstr "Git"
