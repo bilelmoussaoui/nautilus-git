@@ -1,2 +1,4 @@
 build/
 tags
+po/*.mo
+po/*.po~

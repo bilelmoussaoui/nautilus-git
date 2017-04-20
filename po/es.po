@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-17 17:32-0500\n"
+"POT-Creation-Date: 2017-04-20 16:31+0200\n"
 "PO-Revision-Date: 2017-04-17 17:36-0500\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.1\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: es\n"
 
 #: nautilus-git/git.py:38
 msgid "Added files"
@@ -42,27 +42,35 @@ msgstr "Archivos modificados"
 msgid "Modified :"
 msgstr "Modificados:"
 
-#: nautilus-git/git.py:178
+#: nautilus-git/git.py:203
 msgid "Branch:"
 msgstr "Rama:"
 
-#: nautilus-git/git.py:250
+#: nautilus-git/git.py:271
 msgid "More..."
 msgstr "Más…"
 
-#: nautilus-git/git.py:296
+#: nautilus-git/git.py:321
 msgid "Open remote URL"
 msgstr "Abrir un URL remoto"
 
-#: nautilus-git/git.py:309
+#: nautilus-git/git.py:334
 msgid "Compare commits"
 msgstr "Comparar envíos"
 
-#: nautilus-git/git.py:335
+#: nautilus-git/git.py:360
 #, python-brace-format
 msgid "Comparing commits of {0}"
 msgstr "Comparación de envíos de {0}"
 
-#: nautilus-git/git.py:445
+#: nautilus-git/git.py:462
+msgid "Apply"
+msgstr ""
+
+#: nautilus-git/git.py:470
+msgid "Cancel"
+msgstr ""
+
+#: nautilus-git/git.py:553
 msgid "Git"
 msgstr "Git"

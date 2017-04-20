@@ -161,6 +161,31 @@ class Git:
             return ", ".join(stat.split("\n")[1].split(",")[1:])
         return None
 
+    def get_project_branch(self):
+          branch = ""
+          project_name = self.get_project_name()
+          if project_name:
+              branch += project_name + "/"
+          branch += self.get_branch()
+          return branch
+
+    def check_branch_name(self, branch):
+        return True
+
+    def get_branch_list(self):
+        b_list =  execute("git branch --list", self.dir).split("\n")
+        def clean_branch_name(branch_name):
+            return str(branch_name).lstrip("*").strip()
+        return list(map(clean_branch_name, b_list))
+
+    def update_branch(self, branch):
+        branches = self.get_branch_list()
+        if branch in branches:
+            execute("git checkout {}".format(branch), self.dir)
+        else:
+            execute("git checkout -b {0}".format(branch), self.dir)
+
+
 class NautilusPropertyPage(Gtk.Grid):
     """Property page main widget class."""
     def __init__(self, git):
@@ -209,8 +234,9 @@ class NautilusLocation(Gtk.InfoBar):
     _popover = None
     _diff_button = None
 
-    def __init__(self, git):
+    def __init__(self, git, window):
         Gtk.InfoBar.__init__(self)
+        self._window = window
         self._git = git
         self.set_message_type(Gtk.MessageType.QUESTION)
         self.show()
@@ -229,16 +255,11 @@ class NautilusLocation(Gtk.InfoBar):
         image.show()
         container.attach(image, 0, 0, 1, 1)
 
-        label = Gtk.Label()
-        project = self._git.get_project_name()
-        branch = ""
-        if project:
-            branch = "{0}/".format(project)
-        branch += self._git.get_branch()
-
-        label.set_text(branch)
-        label.show()
-        container.attach(label, 1, 0, 1, 1)
+        branch_button = Gtk.Button()
+        branch_button.set_label(self._git.get_project_branch())
+        branch_button.connect("clicked", self._update_branch)
+        branch_button.show()
+        container.attach(branch_button, 1, 0, 1, 1)
         self.get_content_area().add(container)
 
         status = self._git.get_status()
@@ -254,6 +275,9 @@ class NautilusLocation(Gtk.InfoBar):
 
         self.get_action_area().pack_end(button, False, False, 0)
 
+    def _update_branch(self, button):
+        commit = BranchWidget(self._git, self._window)
+
     @staticmethod
     def _build_status_widget(status):
         """Build a widget, contains a counter of modified/added/removed files."""
@@ -261,6 +285,7 @@ class NautilusLocation(Gtk.InfoBar):
         grid = Gtk.Grid()
         grid.set_row_spacing(3)
         grid.set_column_spacing(3)
+        grid.set_valign(Gtk.Align.CENTER)
         grid.show()
         for _status in status:
             if int(status[_status]) > 0:
@@ -408,6 +433,89 @@ class NautilusGitCompare(Gtk.Window):
         box.show()
         self.add(box)
 
+
+class BranchWidget(Gtk.Window):
+
+    def __init__(self, git, window):
+        self._git = git
+        Gtk.Window.__init__(self, Gtk.WindowType.POPUP)
+        # Header Bar
+        self._build_headerbar()
+
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_titlebar(self.hb)
+        self.set_default_size(350, 100)
+        self.set_transient_for(window)
+        self.set_modal(True)
+        self.set_resizable(False)
+        self.set_border_width(18)
+        self._build_main_widget()
+
+        self.show_all()
+
+    def _build_headerbar(self):
+        self.hb = Gtk.HeaderBar()
+        self.hb.set_title(self._git.get_project_branch())
+        # self.hb.set_show_close_button(True)
+
+        self.apply = Gtk.Button()
+        self.apply.set_label(_("Apply"))
+        self.apply.get_style_context().add_class("suggested-action")
+        self.apply.connect("clicked", self.update_branch)
+        self.apply.set_sensitive(False)
+        self.apply.show()
+        self.hb.pack_end(self.apply)
+
+        self.cancel = Gtk.Button()
+        self.cancel.set_label(_("Cancel"))
+        self.cancel.connect("clicked", self.close_window)
+        self.cancel.show()
+        self.hb.pack_start(self.cancel)
+
+    def _build_main_widget(self):
+        grid = Gtk.Grid()
+        branches = self._git.get_branch_list()
+        current_branch = self._git.get_branch()
+        self.branch_entry = Gtk.ComboBoxText.new_with_entry()
+        self.branch_entry.set_entry_text_column(0)
+        i = 0
+        for branch in branches:
+            if branch == current_branch:
+                active_id = i
+            self.branch_entry.append_text(branch)
+            i += 1
+        self.branch_entry.set_active(active_id)
+        self.branch_entry.connect("changed", self._validate_branch_name)
+        self.branch_entry.show()
+        grid.set_halign(Gtk.Align.CENTER)
+        grid.add(self.branch_entry)
+        grid.show()
+        self.add(grid)
+
+    def _validate_branch_name(self, entry):
+        branch = entry.get_active_text().strip()
+        valid = True
+        if branch == self._git.get_branch() or not branch:
+            valid = False
+        else:
+            valid = self._git.check_branch_name(branch)
+
+        self.apply.set_sensitive(valid)
+        if valid:
+            entry.get_style_context().remove_class("error")
+        else:
+            entry.get_style_context().add_class("error")
+
+
+    def update_branch(self, *args):
+        branch = self.branch_entry.get_active_text().strip()
+        self._git.update_branch(branch)
+        self.close_window()
+        # Todo : refresh the window if possible?
+
+    def close_window(self, *args):
+        self.destroy()
+
 class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider):
     """Location widget extension."""
     def __init__(self):
@@ -420,7 +528,7 @@ class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider
         self.window = window
         if is_git(uri):
             git = Git(uri)
-            widget = NautilusLocation(git)
+            widget = NautilusLocation(git, self.window)
             return widget
         else:
             return None

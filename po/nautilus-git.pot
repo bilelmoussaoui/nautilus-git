@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-17 17:31-0500\n"
+"POT-Creation-Date: 2017-04-20 16:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,27 +41,35 @@ msgstr ""
 msgid "Modified :"
 msgstr ""
 
-#: nautilus-git/git.py:178
+#: nautilus-git/git.py:203
 msgid "Branch:"
 msgstr ""
 
-#: nautilus-git/git.py:250
+#: nautilus-git/git.py:271
 msgid "More..."
 msgstr ""
 
-#: nautilus-git/git.py:296
+#: nautilus-git/git.py:321
 msgid "Open remote URL"
 msgstr ""
 
-#: nautilus-git/git.py:309
+#: nautilus-git/git.py:334
 msgid "Compare commits"
 msgstr ""
 
-#: nautilus-git/git.py:335
+#: nautilus-git/git.py:360
 #, python-brace-format
 msgid "Comparing commits of {0}"
 msgstr ""
 
-#: nautilus-git/git.py:445
+#: nautilus-git/git.py:462
+msgid "Apply"
+msgstr ""
+
+#: nautilus-git/git.py:470
+msgid "Cancel"
+msgstr ""
+
+#: nautilus-git/git.py:553
 msgid "Git"
 msgstr ""
