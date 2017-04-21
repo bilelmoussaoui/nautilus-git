@@ -127,13 +127,21 @@ class Git:
 
     def get_status(self):
         """Return a dict with a count of added/modified/removed files."""
-        modified = execute("git status | grep 'modified:' | wc -l", self.dir)
-        removed = execute("git status | grep 'deleted:' | wc -l", self.dir)
-        added = execute("git status | grep 'new file:' | wc -l", self.dir)
+        modified = execute("git status | grep 'modified:'", self.dir)
+        removed = execute("git status | grep 'deleted:'", self.dir)
+        added = execute("git status | grep 'new file:'", self.dir)
+        def get_only_files_path(array):
+            array = array.strip()
+            if array:
+              def clean(file_path):
+                  return file_path.split(':')[1].strip()
+              if len(array) > 0 and array:
+                  return list(map(clean, array.split("\n")))
+            return []
         return {
-            'added': added,
-            'removed': removed,
-            'modified': modified
+            'added': get_only_files_path(added),
+            'removed': get_only_files_path(removed),
+            'modified': get_only_files_path(modified)
         }
 
     def get_modified(self):
@@ -215,7 +223,7 @@ class NautilusPropertyPage(Gtk.Grid):
         status = self._git.get_status()
         i = 2
         for _status in status:
-            if int(status[_status]) > 0:
+            if len(status[_status]) > 0:
                 label = Gtk.Label()
                 label.set_text(GIT_FILES_STATUS[_status]["properties"])
                 label.set_halign(Gtk.Align.END)
@@ -223,7 +231,7 @@ class NautilusPropertyPage(Gtk.Grid):
                 self.attach(label, 0, i, 1, 1)
 
                 label_value = Gtk.Label()
-                label_value.set_text(status[_status])
+                label_value.set_text(len(status[_status]))
                 label_value.set_halign(Gtk.Align.END)
                 label_value.show()
                 self.attach(label_value, 1, i, 1, 1)
@@ -263,23 +271,20 @@ class NautilusLocation(Gtk.InfoBar):
         self.get_content_area().add(container)
 
         status = self._git.get_status()
-
-        grid = self._build_status_widget(status)
-        container.attach(grid, 2, 0, 1, 1)
+        container.attach(self._build_status_widget(status), 2, 0, 1, 1)
 
         button = Gtk.Button()
         button.set_label(_("More..."))
         button.show()
         self._generate_popover(button)
-        button.connect("clicked", self._trigger_popover)
+        button.connect("clicked", self._trigger_popover, self._popover)
 
         self.get_action_area().pack_end(button, False, False, 0)
 
     def _update_branch(self, button):
         commit = BranchWidget(self._git, self._window)
 
-    @staticmethod
-    def _build_status_widget(status):
+    def _build_status_widget(self, status):
         """Build a widget, contains a counter of modified/added/removed files."""
         i = 0
         grid = Gtk.Grid()
@@ -288,26 +293,51 @@ class NautilusLocation(Gtk.InfoBar):
         grid.set_valign(Gtk.Align.CENTER)
         grid.show()
         for _status in status:
-            if int(status[_status]) > 0:
+            if len(status[_status]) > 0:
+                button = Gtk.Button()
+                popover = self._create_status_popover(status[_status], _status)
+                popover.set_relative_to(button)
+                button.connect("clicked", self._trigger_popover, popover)
                 icon = Gio.ThemedIcon(name=GIT_FILES_STATUS[_status]["icon"])
                 image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
                 image.set_tooltip_text(GIT_FILES_STATUS[_status]["tooltip"])
                 image.show()
-                label = Gtk.Label()
-                label.set_text(status[_status])
-                label.show()
-                grid.attach(image, i, 0, 1, 1)
-                i += 1
-                grid.attach(label, i, 0, 1, 1)
+                button.set_image(image)
+                button.set_label(str(len(status[_status])))
+                button.set_always_show_image(True)
+                button.show()
+                grid.attach(button, i, 0, 1, 1)
                 i += 1
         return grid
 
-    def _trigger_popover(self, *args):
+    def _create_status_popover(self, files, status):
+          popover = Gtk.Popover()
+          popover.set_border_width(12)
+          box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+          for _file in files:
+                button = Gtk.Button()
+                button.set_label(_file)
+                if status != "removed":
+                    button.connect("clicked", self._open_default_app, _file)
+                button.get_style_context().add_class("flat")
+                button.set_halign(Gtk.Align.START)
+                button.show()
+                box.add(button)
+          box.show()
+          popover.add(box)
+          return popover
+
+    def _open_default_app(self, button, _file):
+        file_path = "file://" + path.join(self._git.dir, _file)
+        Gio.app_info_launch_default_for_uri(file_path)
+
+
+    def _trigger_popover(self, button, popover):
         """Show/hide popover."""
-        if self._popover.get_visible():
-            self._popover.hide()
+        if popover.get_visible():
+            popover.hide()
         else:
-            self._popover.show()
+           popover.show()
 
     def _generate_popover(self, widget):
         """Create the popover."""
