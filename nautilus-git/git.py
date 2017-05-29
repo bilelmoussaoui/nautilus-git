@@ -472,7 +472,7 @@ class BranchWidget(Gtk.Window):
         # Header Bar
         self._build_headerbar()
 
-        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
         self.set_titlebar(self.hb)
         self.set_default_size(350, 100)
         self.set_transient_for(window)
