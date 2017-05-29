@@ -19,16 +19,18 @@ You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
 import gettext
-from os import path
+from os import path, stat
 from urlparse import urlsplit
 from subprocess import PIPE, Popen
 from ConfigParser import ConfigParser, NoSectionError
 from StringIO import StringIO
+from threading import Thread
+from time import sleep
 from gi import require_version
 require_version("Gtk", "3.0")
 require_version('Nautilus', '3.0')
 require_version('GtkSource', '3.0')
-from gi.repository import Gtk, Nautilus, GObject, Gio, GtkSource
+from gi.repository import Gtk, Nautilus, GObject, Gio, GtkSource, GLib
 _ = gettext.gettext
 gettext.textdomain('nautilus-git')
 
@@ -194,11 +196,44 @@ class Git:
             execute("git checkout -b {0}".format(branch), self.dir)
 
 
+class WatchDog(Thread, GObject.GObject):
+    __gsignals__ = {
+        'refresh': (GObject.SIGNAL_RUN_FIRST, None, ())
+    }
+
+    def __init__(self, git_path):
+        Thread.__init__(self)
+        GObject.GObject.__init__(self)
+        self.daemon = True
+        self.name = git_path
+        self._to_watch = path.join(git_path, ".git", "HEAD")
+        self.alive = path.exists(self._to_watch)
+        self._modified_time = None
+        self.start()
+
+    def emit(self, *args):
+        GLib.idle_add(GObject.GObject.emit, self, *args)
+
+    def run(self):
+        while self.alive:
+            fstat = stat(self._to_watch)
+            modified = fstat.st_mtime
+            if modified and modified != self._modified_time:
+                if self._modified_time is not None:
+                    self.emit("refresh")
+                self._modified_time = modified
+            sleep(1)
+
+    def kill(self):
+        self.alive = False
+
 class NautilusPropertyPage(Gtk.Grid):
     """Property page main widget class."""
     def __init__(self, git):
         Gtk.Grid.__init__(self)
         self._git = git
+        self._watchdog = WatchDog(self._git.dir)
+        self._watchdog.connect("refresh", self.refresh)
         self.set_border_width(18)
         self.set_vexpand(True)
         self.set_row_spacing(6)
@@ -214,12 +249,12 @@ class NautilusPropertyPage(Gtk.Grid):
 
         self.attach(branch, 0, 0, 1, 1)
 
-        branch_value = Gtk.Label()
-        branch_value.set_text(self._git.get_branch())
-        branch_value.set_halign(Gtk.Align.END)
-        branch_value.show()
+        self.branch_value = Gtk.Label()
+        self.branch_value.set_text(self._git.get_branch())
+        self.branch_value.set_halign(Gtk.Align.END)
+        self.branch_value.show()
 
-        self.attach(branch_value, 1, 0, 1, 1)
+        self.attach(self.branch_value, 1, 0, 1, 1)
         status = self._git.get_status()
         i = 2
         for _status in status:
@@ -231,21 +266,28 @@ class NautilusPropertyPage(Gtk.Grid):
                 self.attach(label, 0, i, 1, 1)
 
                 label_value = Gtk.Label()
-                label_value.set_text(len(status[_status]))
+                label_value.set_text(str(len(status[_status])))
                 label_value.set_halign(Gtk.Align.END)
                 label_value.show()
                 self.attach(label_value, 1, i, 1, 1)
                 i += 1
 
+    def refresh(self, event):
+        self.branch_value.set_text(self._git.get_branch())
+        self.branch_value.show()
+
 class NautilusLocation(Gtk.InfoBar):
     """Location bar main widget."""
     _popover = None
     _diff_button = None
+    _watchdog = None
 
     def __init__(self, git, window):
         Gtk.InfoBar.__init__(self)
         self._window = window
         self._git = git
+        self._watchdog = WatchDog(self._git.dir)
+        self._watchdog.connect("refresh", self.refresh)
         self.set_message_type(Gtk.MessageType.QUESTION)
         self.show()
         self._build_widgets()
@@ -282,7 +324,12 @@ class NautilusLocation(Gtk.InfoBar):
         self.get_action_area().pack_end(button, False, False, 0)
 
     def _update_branch(self, button):
-        commit = BranchWidget(self._git, self._window)
+        branch = BranchWidget(self._git, self._window)
+        branch.connect("refresh", self.refresh)
+
+    def refresh(self, event):
+        action = self._window.lookup_action("reload")
+        action.emit("activate", None)
 
     def _build_status_widget(self, status):
         """Build a widget, contains a counter of modified/added/removed files."""
@@ -464,14 +511,19 @@ class NautilusGitCompare(Gtk.Window):
         self.add(box)
 
 
-class BranchWidget(Gtk.Window):
+class BranchWidget(Gtk.Window, GObject.GObject):
+    __gsignals__ = {
+        'refresh': (GObject.SIGNAL_RUN_FIRST, None, ())
+    }
+
 
     def __init__(self, git, window):
-        self._git = git
         Gtk.Window.__init__(self, Gtk.WindowType.POPUP)
+        GObject.GObject.__init__(self)
+        self._git = git
+
         # Header Bar
         self._build_headerbar()
-
         self.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
         self.set_titlebar(self.hb)
         self.set_default_size(350, 100)
@@ -540,6 +592,7 @@ class BranchWidget(Gtk.Window):
     def update_branch(self, *args):
         branch = self.branch_entry.get_active_text().strip()
         self._git.update_branch(branch)
+        self.emit("refresh")
         self.close_window()
         # Todo : refresh the window if possible?
 
