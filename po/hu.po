@@ -1,0 +1,77 @@
+# Hungarian translation for nautilus-git.
+# Copyright (C) 2017 Free Software Foundation, Inc.
+# This file is distributed under the same license as the nautilus-git package.
+#
+# Balázs Úr <urbalazs@gmail.com>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: nautilus-git master\n"
+"Report-Msgid-Bugs-To: https://github.com/bil-elmoussaoui/nautilus-git/issues\n"
+"POT-Creation-Date: 2017-04-20 16:31+0200\n"
+"PO-Revision-Date: 2017-06-01 22:18+0100\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <openscope@googlegroups.com>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 2.0\n"
+
+#: nautilus-git/git.py:38
+msgid "Added files"
+msgstr "Hozzáadott fájlok"
+
+#: nautilus-git/git.py:39
+msgid "Added :"
+msgstr "Hozzáadva:"
+
+#: nautilus-git/git.py:43
+msgid "Removed files"
+msgstr "Eltávolított fájlok"
+
+#: nautilus-git/git.py:44
+msgid "Removed :"
+msgstr "Eltávolítva:"
+
+#: nautilus-git/git.py:48
+msgid "Modified files"
+msgstr "Módosított fájlok"
+
+#: nautilus-git/git.py:49
+msgid "Modified :"
+msgstr "Módosítva:"
+
+#: nautilus-git/git.py:203
+msgid "Branch:"
+msgstr "Ág:"
+
+#: nautilus-git/git.py:271
+msgid "More..."
+msgstr "Több…"
+
+#: nautilus-git/git.py:321
+msgid "Open remote URL"
+msgstr "Távoli URL megnyitása"
+
+#: nautilus-git/git.py:334
+msgid "Compare commits"
+msgstr "Kommitok összehasonlítása"
+
+#: nautilus-git/git.py:360
+#, python-brace-format
+msgid "Comparing commits of {0}"
+msgstr "{0} kommitjainak összehasonlítása"
+
+#: nautilus-git/git.py:462
+msgid "Apply"
+msgstr "Alkalmaz"
+
+#: nautilus-git/git.py:470
+msgid "Cancel"
+msgstr "Mégse"
+
+#: nautilus-git/git.py:553
+msgid "Git"
+msgstr "Git"
+
