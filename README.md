@@ -4,9 +4,9 @@ Nautilus/Nemo extension to add important information about the current git direc
 
 ## Screenshots
 
- <div align="center"><img src="screenshots/screenshot1.png" alt="Preview" /></div>
+<div align="center"><img src="screenshots/screenshot1.png" alt="Preview" /></div>
 
- <div align="center"><img src="screenshots/screenshot2.png" alt="Preview" /></div>
+<div align="center"><img src="screenshots/screenshot2.png" alt="Preview" /></div>
 
 
 
@@ -17,12 +17,12 @@ Nautilus/Nemo extension to add important information about the current git direc
 - `python2`
 - `git`
 
-For Nautilus :
+#### For Nautilus :
 
 - `nautilus-python`:
   - Archlinux : `python2-nautilus`
 
-For Nemo:
+#### For Nemo:
 
 - `nemo-python`
   - Archlinux : `nemo-python`
@@ -44,12 +44,17 @@ For Nemo:
 
 ### Fedora 24/25/26
 
+#### Nautilus
 ```bash
 sudo dnf copr enable heikoada/nautilus-git
 sudo dnf install nautilus-git
 ```
 
+#### Nemo
+
 ### Ubuntu (14.04/16.04/16.10/17.04)
+
+#### Nautilus
 
 ```bash
 sudo add-apt-repository ppa:khurshid-alam/nautilus-git
@@ -57,11 +62,18 @@ sudo apt-get update
 sudo apt-get install nautilus-git
 ```
 
+#### Nemo
+
+
 ### Archlinux
 
+#### Nautilus
 ```bash
 yaourt -S nautilus-ext-git
 ```
+
+#### Nemo
+
 
 ### Manual installation
 
