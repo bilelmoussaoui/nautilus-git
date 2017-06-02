@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/nautilus/git">
+    <file preprocess="xml-stripblanks">ui/branch.ui</file>
+    <file preprocess="xml-stripblanks">ui/compare.ui</file>
+    <file preprocess="xml-stripblanks">ui/location.ui</file>
+    <file preprocess="xml-stripblanks">ui/property.ui</file>
+  </gresource>
+</gresources>

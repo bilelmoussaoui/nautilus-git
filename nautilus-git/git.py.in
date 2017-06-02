@@ -1,0 +1,88 @@
+#!/usr/bin/python2
+"""
+Nautilus git pluging to show useful information under any
+git directory
+
+Author : Bilal Elmoussaoui (bil.elmoussaoui@gmail.com)
+Version : 1.0
+Website : https://github.com/bil-elmoussaoui/nautilus-git
+Licence : GPL-3.0
+nautilus-git is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+nautilus-git is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
+"""
+import gettext
+from imp import load_source
+from os import environ, path
+
+from gi import require_version
+require_version("Gtk", "3.0")
+require_version('Nautilus', '3.0')
+from gi.repository import Gtk, Nautilus, GObject, Gio
+
+
+environ["DATA_DIR"] = "@DATADIR@"
+environ["PYTHON_DIR"] = path.join("@DATADIR@", "src")
+environ["WIDGETS_DIR"] = path.join("@DATADIR@", "src", "widgets")
+environ["MODELS_DIR"] = path.join("@DATADIR@", "src", "models")
+
+resource = Gio.resource_load(path.join(environ["DATA_DIR"],
+                                       'nautilus-git.gresource'))
+Gio.Resource._register(resource)
+
+_ = gettext.gettext
+gettext.textdomain('nautilus-git')
+
+
+utils = load_source("utils", path.join(environ["PYTHON_DIR"],
+                                       "utils.py"))
+location = load_source("location", path.join(environ["WIDGETS_DIR"],
+                                             "location.py"))
+property_ = load_source("property", path.join(environ["WIDGETS_DIR"],
+                                              "property.py"))
+
+
+class NautilusGitLocationWidget(GObject.GObject, Nautilus.LocationWidgetProvider):
+    """Location widget extension."""
+
+    def __init__(self):
+        pass
+
+    def get_widget(self, uri, window):
+        """Overwrite get_widget method."""
+        if utils.is_git(uri):
+            widget = location.NautilusLocation(uri, window).main
+            return widget
+        return None
+
+
+class NautilusGitColumnExtension(GObject.GObject, Nautilus.PropertyPageProvider):
+    """Property widget extension."""
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_property_pages(files):
+        """Overwrite default method."""
+        if len(files) != 1:
+            return
+
+        file_ = files[0]
+        uri = file_.get_uri()
+        if file_.is_directory() and utils.is_git(uri):
+            property_label = Gtk.Label(_('Git'))
+            property_label.show()
+
+            nautilus_property = property_.NautilusPropertyPage(uri).main
+
+            return Nautilus.PropertyPage(name="NautilusPython::git",
+                                         label=property_label,
+                                         page=nautilus_property),

@@ -5,7 +5,7 @@ OUTPUT_FILE=${BASEDIR}/po/${DOMAIN}.pot
 
 echo "Extracting translatable strings... "
 
-find ${BASEDIR}/nautilus-git -name '*.py' | xgettext \
+find ${BASEDIR}/ -name '*.py' | xgettext \
   --output $OUTPUT_FILE \
   --files-from=- \
   --directory=$BASEDIR \
@@ -13,6 +13,26 @@ find ${BASEDIR}/nautilus-git -name '*.py' | xgettext \
   --keyword=C_:1c,2 \
   --from-code=utf-8
 
+find ${BASEDIR}/ -name '*.ui' | xgettext \
+  --output $OUTPUT_FILE \
+  --join-existing \
+  --files-from=- \
+  --directory=$BASEDIR \
+  --language=Glade \
+  --foreign-user \
+  --keyword=C_:1c,2 \
+  --from-code=utf-8
+
+
+xgettext \
+  --join-existing \
+  --output $OUTPUT_FILE \
+  --default-domain=$DOMAIN \
+  --package-name=$DOMAIN \
+  --directory=$BASEDIR \
+  --foreign-user \
+  --language=appdata \
+  ${BASEDIR}/data/nautilus-git.metainfo.xml.in
 
 # Merge the messages with existing po files
 po_files=$(find ${BASEDIR}/po/ -name "*.po")

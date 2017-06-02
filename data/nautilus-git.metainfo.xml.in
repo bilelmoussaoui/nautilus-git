@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="addon">
+  <translation type="gettext">nautilus-git</translation>
+  <id>nautilus-git</id>
+  <extends>org.gnome.nautilus</extends>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <_name>Nautilus Git Integration</_name>
+  <_summary>Nautilus extension to add important information about the current git directory</_summary>
+  <description>
+    <_p>Nautilus extension to add important information about the current git directory</_p>
+    <ul>
+      <_li>Switch branches</_li>
+      <_li>Compare commits</_li>
+    </ul>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/bil-elmoussaoui/nautilus-git/master/screenshots/screenshot1.png</image>
+    </screenshot>
+  </screenshots>
+  <developer_name>Bilal Elmoussaoui</developer_name>
+  <url type="homepage">https://github.com/bil-elmoussaoui/nautilus-git</url>
+  <url type="bugtracker">https://github.com/bil-elmoussaoui/nautilus-git/issues</url>
+  ​</component>

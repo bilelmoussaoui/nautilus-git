@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-20 16:31+0200\n"
+"POT-Creation-Date: 2017-06-02 09:03+0200\n"
 "PO-Revision-Date: 2017-04-17 17:36-0500\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: \n"
@@ -18,59 +18,91 @@ msgstr ""
 "X-Generator: Poedit 2.0.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: nautilus-git/git.py:38
-msgid "Added files"
-msgstr "Archivos añadidos"
-
-#: nautilus-git/git.py:39
-msgid "Added :"
-msgstr "Añadidos:"
-
-#: nautilus-git/git.py:43
-msgid "Removed files"
-msgstr "Archivos quitados"
-
-#: nautilus-git/git.py:44
-msgid "Removed :"
-msgstr "Quitados:"
-
-#: nautilus-git/git.py:48
-msgid "Modified files"
-msgstr "Archivos modificados"
-
-#: nautilus-git/git.py:49
-msgid "Modified :"
-msgstr "Modificados:"
-
-#: nautilus-git/git.py:203
-msgid "Branch:"
-msgstr "Rama:"
-
-#: nautilus-git/git.py:271
-msgid "More..."
-msgstr "Más…"
-
-#: nautilus-git/git.py:321
-msgid "Open remote URL"
-msgstr "Abrir un URL remoto"
-
-#: nautilus-git/git.py:334
-msgid "Compare commits"
-msgstr "Comparar envíos"
-
-#: nautilus-git/git.py:360
+#: src/widgets/compare.py:49
 #, python-brace-format
 msgid "Comparing commits of {0}"
 msgstr "Comparación de envíos de {0}"
 
-#: nautilus-git/git.py:462
-msgid "Apply"
+#: src/widgets/property.py:62
+#, python-brace-format
+msgid "{0} file."
 msgstr ""
 
-#: nautilus-git/git.py:470
+#: build/git.py:81
+msgid "Git"
+msgstr "Git"
+
+#: data/ui/location.ui:8
+#, fuzzy
+msgid "Added Files"
+msgstr "Archivos añadidos"
+
+#: data/ui/location.ui:14
+#, fuzzy
+msgid "Modified Files"
+msgstr "Archivos modificados"
+
+#: data/ui/location.ui:20
+#, fuzzy
+msgid "Removed  Files"
+msgstr "Archivos quitados"
+
+#: data/ui/location.ui:34
+msgid "More..."
+msgstr "Más…"
+
+#: data/ui/location.ui:203
+#, fuzzy
+msgid "Open Remote URL"
+msgstr "Abrir un URL remoto"
+
+#: data/ui/location.ui:221
+#, fuzzy
+msgid "Compare Commits"
+msgstr "Comparar envíos"
+
+#: data/ui/branch.ui:46
 msgid "Cancel"
 msgstr ""
 
-#: nautilus-git/git.py:553
-msgid "Git"
-msgstr "Git"
+#: data/ui/branch.ui:58
+msgid "Apply"
+msgstr ""
+
+#: data/ui/property.ui:16
+msgid "Branch:"
+msgstr "Rama:"
+
+#: data/ui/property.ui:28
+#, fuzzy
+msgid "Added:"
+msgstr "Añadidos:"
+
+#: data/ui/property.ui:40
+#, fuzzy
+msgid "Modified"
+msgstr "Modificados:"
+
+#: data/ui/property.ui:52
+#, fuzzy
+msgid "Removed"
+msgstr "Quitados:"
+
+#: data/nautilus-git.metainfo.xml.in:11
+msgid ""
+"Nautilus extension to add important information about the current git "
+"directory"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:13
+msgid "Switch branches"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:14
+#, fuzzy
+msgid "Compare commits"
+msgstr "Comparar envíos"
+
+#: data/nautilus-git.metainfo.xml.in:22
+msgid "Bilal Elmoussaoui"
+msgstr ""

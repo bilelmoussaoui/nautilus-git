@@ -2,3 +2,5 @@ build/
 tags
 po/*.mo
 po/*.po~
+data/ui/*.ui~
+*.pyc

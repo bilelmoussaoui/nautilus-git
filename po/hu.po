@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: nautilus-git master\n"
-"Report-Msgid-Bugs-To: https://github.com/bil-elmoussaoui/nautilus-git/issues\n"
-"POT-Creation-Date: 2017-04-20 16:31+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-02 09:03+0200\n"
 "PO-Revision-Date: 2017-06-01 22:18+0100\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope@googlegroups.com>\n"
@@ -18,60 +18,91 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: nautilus-git/git.py:38
-msgid "Added files"
-msgstr "Hozzáadott fájlok"
-
-#: nautilus-git/git.py:39
-msgid "Added :"
-msgstr "Hozzáadva:"
-
-#: nautilus-git/git.py:43
-msgid "Removed files"
-msgstr "Eltávolított fájlok"
-
-#: nautilus-git/git.py:44
-msgid "Removed :"
-msgstr "Eltávolítva:"
-
-#: nautilus-git/git.py:48
-msgid "Modified files"
-msgstr "Módosított fájlok"
-
-#: nautilus-git/git.py:49
-msgid "Modified :"
-msgstr "Módosítva:"
-
-#: nautilus-git/git.py:203
-msgid "Branch:"
-msgstr "Ág:"
-
-#: nautilus-git/git.py:271
-msgid "More..."
-msgstr "Több…"
-
-#: nautilus-git/git.py:321
-msgid "Open remote URL"
-msgstr "Távoli URL megnyitása"
-
-#: nautilus-git/git.py:334
-msgid "Compare commits"
-msgstr "Kommitok összehasonlítása"
-
-#: nautilus-git/git.py:360
+#: src/widgets/compare.py:49
 #, python-brace-format
 msgid "Comparing commits of {0}"
 msgstr "{0} kommitjainak összehasonlítása"
 
-#: nautilus-git/git.py:462
-msgid "Apply"
-msgstr "Alkalmaz"
+#: src/widgets/property.py:62
+#, python-brace-format
+msgid "{0} file."
+msgstr ""
 
-#: nautilus-git/git.py:470
-msgid "Cancel"
-msgstr "Mégse"
-
-#: nautilus-git/git.py:553
+#: build/git.py:81
 msgid "Git"
 msgstr "Git"
 
+#: data/ui/location.ui:8
+#, fuzzy
+msgid "Added Files"
+msgstr "Hozzáadott fájlok"
+
+#: data/ui/location.ui:14
+#, fuzzy
+msgid "Modified Files"
+msgstr "Módosított fájlok"
+
+#: data/ui/location.ui:20
+#, fuzzy
+msgid "Removed  Files"
+msgstr "Eltávolított fájlok"
+
+#: data/ui/location.ui:34
+msgid "More..."
+msgstr "Több…"
+
+#: data/ui/location.ui:203
+#, fuzzy
+msgid "Open Remote URL"
+msgstr "Távoli URL megnyitása"
+
+#: data/ui/location.ui:221
+#, fuzzy
+msgid "Compare Commits"
+msgstr "Kommitok összehasonlítása"
+
+#: data/ui/branch.ui:46
+msgid "Cancel"
+msgstr "Mégse"
+
+#: data/ui/branch.ui:58
+msgid "Apply"
+msgstr "Alkalmaz"
+
+#: data/ui/property.ui:16
+msgid "Branch:"
+msgstr "Ág:"
+
+#: data/ui/property.ui:28
+#, fuzzy
+msgid "Added:"
+msgstr "Hozzáadva:"
+
+#: data/ui/property.ui:40
+#, fuzzy
+msgid "Modified"
+msgstr "Módosítva:"
+
+#: data/ui/property.ui:52
+#, fuzzy
+msgid "Removed"
+msgstr "Eltávolítva:"
+
+#: data/nautilus-git.metainfo.xml.in:11
+msgid ""
+"Nautilus extension to add important information about the current git "
+"directory"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:13
+msgid "Switch branches"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:14
+#, fuzzy
+msgid "Compare commits"
+msgstr "Kommitok összehasonlítása"
+
+#: data/nautilus-git.metainfo.xml.in:22
+msgid "Bilal Elmoussaoui"
+msgstr ""

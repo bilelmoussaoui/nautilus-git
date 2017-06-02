@@ -1,14 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is put in the public domain.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: nautilus-git\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-20 16:31+0200\n"
+"POT-Creation-Date: 2017-06-02 09:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,59 +16,82 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: nautilus-git/git.py:38
-msgid "Added files"
-msgstr ""
-
-#: nautilus-git/git.py:39
-msgid "Added :"
-msgstr ""
-
-#: nautilus-git/git.py:43
-msgid "Removed files"
-msgstr ""
-
-#: nautilus-git/git.py:44
-msgid "Removed :"
-msgstr ""
-
-#: nautilus-git/git.py:48
-msgid "Modified files"
-msgstr ""
-
-#: nautilus-git/git.py:49
-msgid "Modified :"
-msgstr ""
-
-#: nautilus-git/git.py:203
-msgid "Branch:"
-msgstr ""
-
-#: nautilus-git/git.py:271
-msgid "More..."
-msgstr ""
-
-#: nautilus-git/git.py:321
-msgid "Open remote URL"
-msgstr ""
-
-#: nautilus-git/git.py:334
-msgid "Compare commits"
-msgstr ""
-
-#: nautilus-git/git.py:360
+#: src/widgets/compare.py:49
 #, python-brace-format
 msgid "Comparing commits of {0}"
 msgstr ""
 
-#: nautilus-git/git.py:462
-msgid "Apply"
+#: src/widgets/property.py:62
+#, python-brace-format
+msgid "{0} file."
 msgstr ""
 
-#: nautilus-git/git.py:470
+#: build/git.py:81
+msgid "Git"
+msgstr ""
+
+#: data/ui/location.ui:8
+msgid "Added Files"
+msgstr ""
+
+#: data/ui/location.ui:14
+msgid "Modified Files"
+msgstr ""
+
+#: data/ui/location.ui:20
+msgid "Removed  Files"
+msgstr ""
+
+#: data/ui/location.ui:34
+msgid "More..."
+msgstr ""
+
+#: data/ui/location.ui:203
+msgid "Open Remote URL"
+msgstr ""
+
+#: data/ui/location.ui:221
+msgid "Compare Commits"
+msgstr ""
+
+#: data/ui/branch.ui:46
 msgid "Cancel"
 msgstr ""
 
-#: nautilus-git/git.py:553
-msgid "Git"
+#: data/ui/branch.ui:58
+msgid "Apply"
+msgstr ""
+
+#: data/ui/property.ui:16
+msgid "Branch:"
+msgstr ""
+
+#: data/ui/property.ui:28
+msgid "Added:"
+msgstr ""
+
+#: data/ui/property.ui:40
+msgid "Modified"
+msgstr ""
+
+#: data/ui/property.ui:52
+msgid "Removed"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:11
+msgid ""
+"Nautilus extension to add important information about the current git "
+"directory"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:13
+msgid "Switch branches"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:14
+msgid "Compare commits"
+msgstr ""
+
+#: data/nautilus-git.metainfo.xml.in:22
+msgid "Bilal Elmoussaoui"
 msgstr ""

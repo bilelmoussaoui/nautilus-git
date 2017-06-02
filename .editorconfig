@@ -6,3 +6,9 @@ indent_style = space
 charset = utf-8
 insert_final_newline = true
 trim_trailing_whitespace = true
+[*.ui]
+indent_size = 2
+[*.xml]
+indent_size = 2
+[*.xml.in]
+indent_size = 2

@@ -1,1 +1,2 @@
 option('post_install', type : 'boolean', value : 'true')
+option('file_manager', type : 'string', value : 'nautilus')
