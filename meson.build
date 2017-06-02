@@ -22,6 +22,11 @@ subdir('po')
 install_data('nautilus-git/git.py', install_mode : false,
 			 install_dir : get_option('prefix') + '/share/nautilus-python/extensions/')
 
+install_data(
+    'data/' + meson.project_name() + '.metainfo.xml',
+    install_dir: join_paths(get_option('datadir'), 'metainfo')
+)
+
 if get_option('post_install') == true
 	meson.add_install_script('meson_post_install.sh')
 endif
