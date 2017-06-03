@@ -11,7 +11,7 @@ if file_manager == 'nautilus'
 elif file_manager == 'nemo'
     package = 'nemo-git'
     destination = 'nemo-python'
-    filename = 'nemo-git'
+    filename = 'nemo-git.py'
 endif
 
 i18n = import('i18n')
