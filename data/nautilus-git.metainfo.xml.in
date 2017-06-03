@@ -5,13 +5,13 @@
   <extends>org.gnome.nautilus</extends>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
-  <_name>Nautilus Git Integration</_name>
-  <_summary>Nautilus extension to add important information about the current git directory</_summary>
+  <name>Nautilus Git Integration</name>
+  <summary>Nautilus extension to add important information about the current git directory</summary>
   <description>
-    <_p>Nautilus extension to add important information about the current git directory</_p>
+    <p>Nautilus extension to add important information about the current git directory</p>
     <ul>
-      <_li>Switch branches</_li>
-      <_li>Compare commits</_li>
+      <li>Switch branches</li>
+      <li>Compare commits</li>
     </ul>
   </description>
   <screenshots>
