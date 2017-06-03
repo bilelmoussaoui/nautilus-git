@@ -7,9 +7,11 @@ file_manager = get_option('file_manager')
 if file_manager == 'nautilus'
     package = 'nautilus-git'
     destination = 'nautilus-python'
+    filename = 'nautilus-git.py'
 elif file_manager == 'nemo'
     package = 'nemo-git'
     destination = 'nemo-python'
+    filename = 'nemo-git'
 endif
 
 i18n = import('i18n')
@@ -24,10 +26,11 @@ install_subdir('src', install_dir: pkgdata_dir)
 # Configuration params
 conf = configuration_data()
 conf.set('DATADIR', pkgdata_dir)
+conf.set('PROJECT', meson.project_name())
 
 configure_file(
-  input : join_paths(package, 'git.py.in'),
-  output : 'git.py',
+  input : join_paths(package, filename + '.in'),
+  output : filename,
   configuration : conf,
   install_dir: extension_dir
 )

@@ -4,6 +4,6 @@
     <file preprocess="xml-stripblanks">ui/branch.ui</file>
     <file preprocess="xml-stripblanks">ui/compare.ui</file>
     <file preprocess="xml-stripblanks">ui/location.ui</file>
-    <file preprocess="xml-stripblanks">ui/property.ui</file>
+    <file preprocess="xml-stripblanks">ui/page.ui</file>
   </gresource>
 </gresources>

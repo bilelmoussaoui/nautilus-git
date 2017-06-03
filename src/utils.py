@@ -20,13 +20,13 @@ along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 from os import path
 from subprocess import PIPE, Popen
 from urlparse import urlsplit
-
+from urllib2 import unquote
 
 def get_file_path(uri):
     """Return file path from an uri."""
     url = urlsplit(uri)
     if url.scheme.lower() == "file":
-        return url.path
+        return unquote(url.path)
     return None
 
 

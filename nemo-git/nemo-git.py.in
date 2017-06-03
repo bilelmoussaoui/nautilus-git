@@ -17,58 +17,46 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
-import gettext
-
-from imp import load_source
+from gettext import textdomain, gettext as _
 from os import environ, path
+from sys import path as sys_path
 
 from gi import require_version
 require_version("Gtk", "3.0")
 require_version('Nemo', '3.0')
 from gi.repository import Gtk, Nemo, GObject, Gio
 
-
 environ["DATA_DIR"] = "@DATADIR@"
-environ["PYTHON_DIR"] = path.join("@DATADIR@", "src")
+environ["SRC_DIR"] = path.join("@DATADIR@", "src")
 environ["WIDGETS_DIR"] = path.join("@DATADIR@", "src", "widgets")
 environ["MODELS_DIR"] = path.join("@DATADIR@", "src", "models")
+
+sys_path.insert(0, environ["SRC_DIR"])
+sys_path.insert(0, environ["WIDGETS_DIR"])
+
+from utils import is_git
+from location import NautilusLocation
+from page import NautilusPropertyPage
 
 
 resource = Gio.resource_load(path.join(environ["DATA_DIR"],
                                        'nautilus-git.gresource'))
 Gio.Resource._register(resource)
 
-_ = gettext.gettext
-gettext.textdomain('nautilus-git')
-
-
-utils = load_source("utils", path.join(environ["PYTHON_DIR"],
-                                       "utils.py"))
-location = load_source("location", path.join(environ["WIDGETS_DIR"],
-                                             "location.py"))
-property_ = load_source("property", path.join(environ["WIDGETS_DIR"],
-                                              "property.py"))
-
+textdomain('nautilus-git')
 
 class NemoGitLocationWidget(GObject.GObject, Nemo.LocationWidgetProvider):
     """Location widget extension."""
 
-    def __init__(self):
-        pass
-
     def get_widget(self, uri, window):
         """Overwrite get_widget method."""
-        if utils.is_git(uri):
-            widget = location.NautilusLocation(uri, window).main
-            return widget
+        if is_git(uri):
+            return NautilusLocation(uri, window).main
         return None
 
 
 class NemoGitColumnExtension(GObject.GObject, Nemo.PropertyPageProvider):
     """Property widget extension."""
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def get_property_pages(files):
@@ -78,12 +66,10 @@ class NemoGitColumnExtension(GObject.GObject, Nemo.PropertyPageProvider):
 
         file_ = files[0]
         uri = file_.get_uri()
-        if file_.is_directory() and utils.is_git(uri):
+        if file_.is_directory() and is_git(uri):
             property_label = Gtk.Label(_('Git'))
             property_label.show()
 
-            nautilus_property = property_.NautilusPropertyPage(uri).main
-
             return Nemo.PropertyPage(name="NemoPython::git",
                                      label=property_label,
-                                     page=nautilus_property),
+                                     page=NautilusPropertyPage(uri).main),

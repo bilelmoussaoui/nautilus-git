@@ -18,23 +18,24 @@ You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
 from ConfigParser import ConfigParser, NoSectionError
-from imp import load_source
 from os import environ, path
 from StringIO import StringIO
+from sys import path as sys_path
 
-utils = load_source("utils", path.join(environ["PYTHON_DIR"], "utils.py"))
+sys_path.insert(0, environ["SRC_DIR"])
+from utils import execute, get_file_path, get_real_git_dir
 
 
 class Git:
     """Main Git class."""
 
     def __init__(self, uri):
-        _uri = utils.get_file_path(uri)
-        uri = utils.get_real_git_dir(_uri)
-        if uri:
-            self._dir = uri
+        file_path = get_file_path(uri)
+        git_dir = get_real_git_dir(file_path)
+        if git_dir:
+            self._dir = git_dir
         else:
-            self._dir = _uri
+            self._dir = file_path
 
     @property
     def dir(self):
@@ -43,7 +44,7 @@ class Git:
 
     def get_branch(self):
         """Return branch name."""
-        return utils.execute(r"git symbolic-ref HEAD | sed 's!refs\/heads\/!!'", self.dir)
+        return execute(r"git symbolic-ref HEAD | sed 's!refs\/heads\/!!'", self.dir)
 
     def get_project_name(self):
         """Return project name if found."""
@@ -66,9 +67,9 @@ class Git:
 
     def get_status(self):
         """Return a dict with a count of added/modified/removed files."""
-        modified = utils.execute("git status | grep 'modified:'", self.dir)
-        removed = utils.execute("git status | grep 'deleted:'", self.dir)
-        added = utils.execute("git status | grep 'new file:'", self.dir)
+        modified = execute("git status | grep 'modified:'", self.dir)
+        removed = execute("git status | grep 'deleted:'", self.dir)
+        added = execute("git status | grep 'new file:'", self.dir)
 
         def get_only_files_path(array):
             array = array.strip()
@@ -86,7 +87,7 @@ class Git:
 
     def get_modified(self):
         """Return a list of files that have been modified."""
-        modified = utils.execute("{ git diff --name-only ; git diff "
+        modified = execute("{ git diff --name-only ; git diff "
                                  "--name-only --staged ; } | sort | uniq",
                                  self.dir)
         if modified:
@@ -95,17 +96,17 @@ class Git:
 
     def get_diff(self, filename):
         """Return the diff bettween the current file and HEAD."""
-        diff = utils.execute("git diff --unified=0 {0}".format(filename),
+        diff = execute("git diff --unified=0 {0}".format(filename),
                              self.dir).split("\n")[4:]
         return "\n".join(diff)
 
     def get_remote_url(self):
         """Return remote url."""
-        return utils.execute("git config --get remote.origin.url", self.dir)
+        return execute("git config --get remote.origin.url", self.dir)
 
     def get_stat(self, filename):
         """Return file stat line added/removed."""
-        stat = utils.execute("git diff --stat {0}".format(filename), self.dir)
+        stat = execute("git diff --stat {0}".format(filename), self.dir)
         if stat:
             return ", ".join(stat.split("\n")[1].split(",")[1:])
         return None
@@ -122,7 +123,7 @@ class Git:
         return True
 
     def get_branch_list(self):
-        b_list = utils.execute("git branch --list", self.dir).split("\n")
+        b_list = execute("git branch --list", self.dir).split("\n")
 
         def clean_branch_name(branch_name):
             return str(branch_name).lstrip("*").strip()
@@ -131,6 +132,6 @@ class Git:
     def update_branch(self, branch):
         branches = self.get_branch_list()
         if branch in branches:
-            utils.execute("git checkout {}".format(branch), self.dir)
+            execute("git checkout {}".format(branch), self.dir)
         else:
-            utils.execute("git checkout -b {0}".format(branch), self.dir)
+            execute("git checkout -b {0}".format(branch), self.dir)

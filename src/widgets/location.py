@@ -17,22 +17,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
-from imp import load_source
-from os import environ, path
-
+from os import environ
+from sys import path as sys_path
 from gi import require_version
 require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
 
 
-git = load_source("git", path.join(environ["MODELS_DIR"],
-                                   "git.py"))
-watchdog = load_source("watchdog", path.join(environ["MODELS_DIR"],
-                                             "watchdog.py"))
-branch = load_source("branch", path.join(environ["WIDGETS_DIR"],
-                                         "branch.py"))
-compare = load_source("compare", path.join(environ["WIDGETS_DIR"],
-                                           "compare.py"))
+sys_path.insert(0, environ["MODELS_DIR"])
+sys_path.insert(0, environ["WIDGETS_DIR"])
+
+from git import Git
+from watchdog import WatchDog
+from branch import BranchWidget
+from compare import NautilusGitCompare
 
 
 class NautilusLocation:
@@ -40,8 +38,8 @@ class NautilusLocation:
 
     def __init__(self, git_uri, window):
         self._window = window
-        self._git = git.Git(git_uri)
-        self._watchdog = watchdog.WatchDog(self._git.dir)
+        self._git = Git(git_uri)
+        self._watchdog = WatchDog(self._git.dir)
         self._watchdog.connect("refresh", self._refresh)
 
         self._builder = Gtk.Builder()
@@ -100,7 +98,7 @@ class NautilusLocation:
 
     def _update_branch(self, button):
         """Open the branch widget."""
-        branch_ = branch.BranchWidget(self._git, self._window)
+        branch_ = BranchWidget(self._git, self._window)
         branch_.connect("refresh", self._refresh)
 
     def _refresh(self, event):
@@ -116,7 +114,7 @@ class NautilusLocation:
 
     def _compare_commits(self, *args):
         """Compare commits widget creation."""
-        widget = compare.NautilusGitCompare(self._git)
+        widget = NautilusGitCompare(self._git)
         self._popover.hide()
 
     def _open_remote_browser(self, *args):

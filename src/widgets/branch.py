@@ -17,8 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
-from os import environ, path
-
 from gi import require_version
 require_version("Gtk", "3.0")
 from gi.repository import GObject, Gtk
