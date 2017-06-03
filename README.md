@@ -12,7 +12,7 @@ Nautilus/Nemo extension to add important information about the current git direc
 
 ## Requirements:
 
-### Runing dependecies
+### Running dependencies
 
 - `python2`
 - `git`
@@ -27,18 +27,10 @@ Nautilus/Nemo extension to add important information about the current git direc
 - `nemo-python`
   - Archlinux : `nemo-python`
 
-
-
 ### Building dependencies
 
-- `meson`
+- `meson` >= `0.40.0`
 - `ninja`
-- `intltool`
-- `gtk+-3.0`
-- `gobject-introspection`:
-  - Debian/Ubuntu : `libgirepository1.0-dev`
-  - Fedora : `gobject-introspection-devel`
-  - Archlinux :  `gobject-introspection`
 
 ## How to install
 
@@ -89,10 +81,8 @@ git clone https://github.com/bil-elmoussaoui/nautilus-git
 
 ```bash
 cd nautilus-git
-mkdir build
-cd build
-meson .. --prefix /usr -Dfile_manager=nautilus/nemo
-sudo ninja install
+meson builddir --prefix=/usr -Dfile_manager=[nautilus|nemo]
+sudo ninja -C builddir install
 ```
 
 
@@ -104,25 +94,9 @@ nautilus -q
 
 ## How to uninstall
 
-1- Download the uninstallation file
-
 ```bash
-cd /tmp && wget -O uninstall.sh https://raw.githubusercontent.com/bil-elmoussaoui/nautilus-git/master/uninstall.sh
+sudo ninja -C builddir uninstall
 ```
-
-2- Make the file executable
-
-```bash
-chmod +x ./uninstall.sh
-```
-
-3- Run it!
-
-```bash
-sudo ./uninstall.sh /usr
-```
-
-PS : Replace `/usr` with whatever installation prefix you have chosen before.
 
 ## Credits
 

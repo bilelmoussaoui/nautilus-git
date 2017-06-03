@@ -1,6 +1,5 @@
 build/
 tags
-po/*.mo
 po/*.po~
+po/*.pot
 data/ui/*.ui~
-*.pyc

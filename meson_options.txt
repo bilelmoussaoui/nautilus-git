@@ -1,2 +1,1 @@
-option('post_install', type : 'boolean', value : 'true')
-option('file_manager', type : 'string', value : 'nautilus')
+option('file_manager', type : 'combo', choices : ['nautilus', 'nemo'], value : 'nautilus')

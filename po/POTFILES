@@ -1,0 +1,8 @@
+nautilus-git/git.py.in
+nemo-git/git.py.in
+src/widgets/compare.py
+src/widgets/property.py
+data/nautilus-git.metainfo.xml.in
+data/ui/branch.ui
+data/ui/location.ui
+data/ui/property.ui
