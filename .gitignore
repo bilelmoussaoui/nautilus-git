@@ -4,3 +4,6 @@ po/*.po~
 po/*.pot
 data/ui/*.ui~
 builddir/
+.idea/
+*.iml
+build.sh

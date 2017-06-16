@@ -56,9 +56,9 @@ class NautilusLocation:
     def _build_widgets(self):
         """Build needed widgets."""
         self._popover = self._builder.get_object("popover")
-        project_branch = self._git.get_project_branch()
-        self._builder.get_object("branch").set_label(project_branch)
-        remote_url = self._git.get_remote_url()
+        repository = self._git.repository
+        self._builder.get_object("branch").set_label(repository)
+        remote_url = self._git.remote_url
         # Show the open remote button only if it's a url
         has_remote = False
         if remote_url.lower().startswith(("http://", "https://", "wwww")):
@@ -114,10 +114,10 @@ class NautilusLocation:
 
     def _compare_commits(self, *args):
         """Compare commits widget creation."""
-        widget = NautilusGitCompare(self._git)
+        NautilusGitCompare(self._git)
         self._popover.hide()
 
     def _open_remote_browser(self, *args):
         """Open the remote url on the default browser."""
-        Gio.app_info_launch_default_for_uri(self._git.get_remote_url())
+        Gio.app_info_launch_default_for_uri(self._git.remote_url)
         self._popover.hide()

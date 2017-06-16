@@ -30,6 +30,7 @@ sys_path.insert(0, environ["MODELS_DIR"])
 from git import Git
 from watchdog import WatchDog
 
+
 class NautilusPropertyPage:
     """Property page main widget class."""
 
@@ -48,7 +49,7 @@ class NautilusPropertyPage:
 
     def _build_widgets(self):
         """Build needed widgets."""
-        self._builder.get_object("branch").set_text(self._git.get_branch())
+        self._builder.get_object("branch").set_text(self._git.branch)
         status = self._git.get_status()
 
         status_widgets = ["added", "removed", "modified"]
@@ -59,5 +60,5 @@ class NautilusPropertyPage:
 
     def _refresh(self, event):
         branch = self._builder.get_object("branch")
-        branch.set_text(self._git.get_branch())
+        branch.set_text(self._git.branch)
         branch.show()

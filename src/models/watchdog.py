@@ -33,17 +33,18 @@ class WatchDog(Thread, GObject.GObject):
         Thread.__init__(self)
         GObject.GObject.__init__(self)
         self.daemon = True
-        self.name = git_path
+        self._name = git_path
         self._to_watch = path.join(git_path, ".git", "HEAD")
-        self.alive = path.exists(self._to_watch)
+        self._alive = path.exists(self._to_watch)
         self._modified_time = None
         self.start()
 
     def emit(self, *args):
+        """Override the emit method on GObject."""
         GLib.idle_add(GObject.GObject.emit, self, *args)
 
     def run(self):
-        while self.alive:
+        while self._alive:
             fstat = stat(self._to_watch)
             modified = fstat.st_mtime
             if modified and modified != self._modified_time:
@@ -53,4 +54,5 @@ class WatchDog(Thread, GObject.GObject):
             sleep(1)
 
     def kill(self):
-        self.alive = False
+        """Kill the current watchDog."""
+        self._alive = False

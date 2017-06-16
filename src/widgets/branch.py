@@ -48,14 +48,14 @@ class BranchWidget(GObject.GObject):
         """Widgets builder."""
         headerbar = self._builder.get_object("headerbar")
         # Set the title of the headerbar
-        headerbar.set_title(self._git.get_project_branch())
+        headerbar.set_title(self._git.repository)
 
         branch_entry = self._builder.get_object("branch")
 
         # Get a list of availables branches
-        branches = self._git.get_branch_list()
+        branches = self._git.branches
         # Get current branch
-        current_branch = self._git.get_branch()
+        current_branch = self._git.branch
 
         # fill in the the branch entry
         branch_entry.set_entry_text_column(0)
@@ -74,10 +74,10 @@ class BranchWidget(GObject.GObject):
         branch = entry.get_active_text().strip()
         apply_button = self._builder.get_object("applyButton")
         valid = True
-        if branch == self._git.get_branch() or not branch:
+        if branch == self._git.branch or not branch:
             valid = False
         else:
-            valid = self._git.check_branch_name(branch)
+            valid = self._git.is_valid_branch(branch)
 
         apply_button.set_sensitive(valid)
         if valid:
@@ -88,7 +88,7 @@ class BranchWidget(GObject.GObject):
     def _update_branch(self, *args):
         """Update the branch."""
         branch = self._builder.get_object("branch").get_active_text().strip()
-        self._git.update_branch(branch)
+        self._git.branch = branch
         self.emit("refresh")
         self._close_window()
 

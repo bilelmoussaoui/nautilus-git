@@ -17,10 +17,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
+import difflib
 from os import path
 from subprocess import PIPE, Popen
 from urlparse import urlsplit
 from urllib2 import unquote
+
 
 def get_file_path(uri):
     """Return file path from an uri."""
@@ -43,7 +45,6 @@ def is_git(folder_path):
 def get_real_git_dir(directory):
     """Return the absolute path of the .git folder."""
     dirs = directory.split("/")
-    current_path = ""
     for i in range(len(dirs) - 1, 0, -1):
         current_path = "/".join(dirs[0:i])
         git_folder = path.join(current_path, ".git")
@@ -61,3 +62,31 @@ def execute(cmd, working_dir=None):
         command = Popen(cmd, stdout=PIPE, stderr=PIPE)
     output = command.communicate()[0]
     return output.decode("utf-8").strip()
+
+
+def get_diff(content1, content2):
+    differ = difflib.Differ()
+    diff = list(differ.compare(content1, content2))
+    resultat = []
+    line_no1 = 0
+    line_no2 = 0
+
+    for line in diff:
+        code = line[:2]
+        line_code = line[2:]
+        if code == "  ":
+            line_no1 += 1
+            line_no2 += 1
+        elif code == "- ":
+            if line != "\n":
+                line_no1 += 1
+                resultat.append([line_no1, None, code, line_code])
+            else:
+                line_no1 -= 1
+        elif code == "+ ":
+            if line != "\n":
+                line_no2 += 1
+                resultat.append([None, line_no2, code, line_code])
+            else:
+                line_no2 -= 1
+    return resultat
