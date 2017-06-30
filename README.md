@@ -8,21 +8,20 @@ Nautilus/Nemo extension to add important information about the current git direc
 
 <div align="center"><img src="screenshots/screenshot2.png" alt="Preview" /></div>
 
-
-
-## Requirements:
+## Requirements
 
 ### Running dependencies
 
 - `python2`
 - `git`
+- `python-pygit`
 
-#### For Nautilus :
+#### For Nautilus
 
 - `nautilus-python`:
   - Archlinux : `python2-nautilus`
 
-#### For Nemo:
+#### For Nemo
 
 - `nemo-python`
   - Archlinux : `nemo-python`
@@ -37,6 +36,7 @@ Nautilus/Nemo extension to add important information about the current git direc
 ### Fedora 24/25/26
 
 #### Nautilus
+
 ```bash
 sudo dnf copr enable heikoada/nautilus-git
 sudo dnf install nautilus-git
@@ -60,6 +60,7 @@ sudo apt-get install nautilus-git
 ### Archlinux
 
 #### Nautilus
+
 ```bash
 yaourt -S nautilus-ext-git
 ```
@@ -84,7 +85,6 @@ cd nautilus-git
 meson builddir --prefix=/usr -Dfile_manager=[nautilus|nemo]
 sudo ninja -C builddir install
 ```
-
 
 4- Restart Nautilus
 

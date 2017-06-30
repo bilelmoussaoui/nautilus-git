@@ -29,17 +29,14 @@ from gi.repository import Gtk, Nautilus, GObject, Gio
 
 
 environ["DATA_DIR"] = "@DATADIR@"
-environ["SRC_DIR"] = path.join("@DATADIR@", "src")
-environ["WIDGETS_DIR"] = path.join("@DATADIR@", "src", "widgets")
-environ["MODELS_DIR"] = path.join("@DATADIR@", "src", "models")
 
-sys_path.insert(0, environ["SRC_DIR"])
-sys_path.insert(0, environ["WIDGETS_DIR"])
+sys_path.insert(0,  path.join("@DATADIR@", "src"))
+sys_path.insert(0, path.join("@DATADIR@", "src", "widgets"))
+sys_path.insert(0, path.join("@DATADIR@", "src", "models"))
 
-from utils import is_git
+from git_utils import is_git
 from location import NautilusLocation
 from page import NautilusPropertyPage
-
 
 resource = Gio.resource_load(path.join(environ["DATA_DIR"],
                                        'nautilus-git.gresource'))

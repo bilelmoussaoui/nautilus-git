@@ -18,17 +18,14 @@ You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
 from gettext import gettext as _
-from os import environ
-from sys import path as sys_path
 
 from gi import require_version
 require_version("Gtk", "3.0")
 require_version("GtkSource", "3.0")
 from gi.repository import Gio, GObject, Gtk, GtkSource, Gdk
 
-sys_path.insert(0, environ["MODELS_DIR"])
 
-from utils import get_diff
+from git_utils import get_diff
 
 
 class NautilusGitCompare:
@@ -53,6 +50,7 @@ class NautilusGitCompare:
         title = _("Comparing commits of {}").format(self._git.project)
 
         header_bar.set_title(title)
+        header_bar.set_subtitle(self._git.commit_hex)
 
         # Build list of modified files
         self._head = self._builder.get_object("head")
@@ -89,27 +87,30 @@ class NautilusGitCompare:
         language = lang_manager.guess_language(file_name, None)
 
         head, origin = self._git.diff(file_name)
+        if head and origin:
+            diff = get_diff(head, origin)
 
-        diff = get_diff(head, origin)
+            head = self.get_buffer(head, language)
+            origin = self.get_buffer(origin, language)
 
-        head = self.get_buffer(head, language)
-        origin = self.get_buffer(origin, language)
+            for line in diff:
+                code = line[2]
+                if code == '- ':
+                    line_no = line[0]
+                    self.add_tag('removed', head, line_no - 1, line_no)
 
-        current_line = 0
-        for line in diff:
-            code = line[2]
-            if code == '- ':
-                line_no = line[0]
-                current_line = line_no
-                self.add_tag('removed', head, line_no - 1, line_no)
+                if code == '+ ':
+                    line_no = line[1]
+                    self.add_tag("added", origin, line_no - 1, line_no)
 
-            if code == '+ ':
-                line_no = line[1]
-                self.add_tag("added", origin, line_no - 1, line_no)
+            self._head.set_buffer(head)
+            self._origin.set_buffer(origin)
+        else:
+            if head:
+                self._head.set_buffer(self.get_buffer(head, language))
+            if origin:
 
-
-        self._head.set_buffer(head)
-        self._origin.set_buffer(origin)
+                self._origin.set_buffer(self.get_buffer(origin, language))
 
     @staticmethod
     def add_tag(tag, buffer, start_line, end_line):

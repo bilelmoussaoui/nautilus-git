@@ -30,13 +30,16 @@ class BranchWidget(GObject.GObject):
     def __init__(self, git_uri, window):
         GObject.GObject.__init__(self)
         self._git = git_uri
+        self._success = True
+        self._git.connect("message", self.do_set_message)
 
         self._builder = Gtk.Builder()
         self._builder.add_from_resource('/com/nautilus/git/ui/branch.ui')
         self._builder.connect_signals({
             "on_cancel": self._close_window,
             "on_apply": self._update_branch,
-            "branch_changed": self._validate_branch_name
+            "branch_changed": self._validate_branch_name,
+            "on_infobar_response": self._on_infobar_response
         })
 
         self._window = self._builder.get_object("window")
@@ -85,12 +88,29 @@ class BranchWidget(GObject.GObject):
         else:
             entry.get_style_context().add_class("error")
 
+    def do_set_message(self, git, msg, msg_type):
+        if msg_type == "error":
+            infobar_type = Gtk.MessageType.ERROR
+            self._success = False
+        else:
+            infobar_type = Gtk.MessageType.INFO
+            self._success = True
+        self._builder.get_object("applyButton").set_sensitive(self._success)
+        self._builder.get_object("revealer").set_reveal_child(True)
+        infobar = self._builder.get_object("infobar")
+        infobar.set_message_type(infobar_type)
+        self._builder.get_object("msg_label").set_text(msg)
+
+    def _on_infobar_response(self, revealer, *args):
+        revealer.set_reveal_child(False)
+
     def _update_branch(self, *args):
         """Update the branch."""
         branch = self._builder.get_object("branch").get_active_text().strip()
         self._git.branch = branch
-        self.emit("refresh")
-        self._close_window()
+        if self._success:
+            self.emit("refresh")
+            self._close_window()
 
     def _close_window(self, *args):
         """Close the window."""

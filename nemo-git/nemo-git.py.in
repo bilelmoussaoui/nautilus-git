@@ -34,7 +34,7 @@ environ["MODELS_DIR"] = path.join("@DATADIR@", "src", "models")
 sys_path.insert(0, environ["SRC_DIR"])
 sys_path.insert(0, environ["WIDGETS_DIR"])
 
-from utils import is_git
+from git_utils import is_git
 from location import NautilusLocation
 from page import NautilusPropertyPage
 

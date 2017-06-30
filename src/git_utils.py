@@ -24,7 +24,7 @@ from urlparse import urlsplit
 from urllib2 import unquote
 
 
-def get_file_path(uri):
+def uriparse(uri):
     """Return file path from an uri."""
     url = urlsplit(uri)
     if url.scheme.lower() == "file":
@@ -34,24 +34,12 @@ def get_file_path(uri):
 
 def is_git(folder_path):
     """Verify if the current folder_path is a git directory."""
-    folder_path = get_file_path(folder_path)
+    folder_path = uriparse(folder_path)
     if folder_path:
         output = execute('git rev-parse --is-inside-work-tree',
                          folder_path).lower()
         return output == "true"
     return None
-
-
-def get_real_git_dir(directory):
-    """Return the absolute path of the .git folder."""
-    dirs = directory.split("/")
-    for i in range(len(dirs) - 1, 0, -1):
-        current_path = "/".join(dirs[0:i])
-        git_folder = path.join(current_path, ".git")
-        if path.exists(git_folder):
-            return current_path
-    return None
-
 
 def execute(cmd, working_dir=None):
     """Execute a shell command."""
