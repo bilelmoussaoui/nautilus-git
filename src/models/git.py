@@ -58,7 +58,11 @@ class Git(GObject.GObject):
 
     @branch.setter
     def branch(self, branch):
-        branch = self._repo.lookup_branch(branch)
+        if branch not in self.branches:
+            commit = self._repo.head.get_object()
+            branch = self._repo.branches.local.create(branch, commit)
+        else:
+            branch = self._repo.lookup_branch(branch)
         ref = self._repo.lookup_reference(branch.name)
         try:
             self._repo.checkout(ref)
