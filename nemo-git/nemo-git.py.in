@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 """
 Nemo git pluging to show useful information under any
 git directory

@@ -17,9 +17,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
-from ConfigParser import ConfigParser, NoSectionError
+
+# Try Python2 imports
+try:
+    from StringIO import StringIO
+    from ConfigParser import ConfigParser, NoSectionError
+
+# Python3 imports
+except ModuleNotFoundError:
+    from io import StringIO
+    from configparser import ConfigParser, NoSectionError
+
+
 from os import environ, path
-from StringIO import StringIO
 from sys import path as sys_path
 
 sys_path.insert(0, environ["SRC_DIR"])

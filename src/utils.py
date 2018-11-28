@@ -19,8 +19,16 @@ along with nautilus-git. If not, see <http://www.gnu.org/licenses/>.
 """
 from os import path
 from subprocess import PIPE, Popen
-from urlparse import urlsplit
-from urllib2 import unquote
+
+# Try Python2 imports
+try:
+    from urllib2 import unquote
+    from urlparse import urlsplit
+
+# Python3 imports
+except ImportError or ModuleNotFoundError:
+    from urllib.parse import urlsplit, unquote
+
 
 def get_file_path(uri):
     """Return file path from an uri."""
