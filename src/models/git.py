@@ -106,12 +106,14 @@ class Git:
         if url[0:8] == "https://":
             pass
         elif url[0:4] == "git@":
-            # Remove git@ and .git in beginning/end and replace : with .
-            url = "https://" + url[4:-4]
-            url = url.replace(":", ".")
+            # Remove git@ and .git in beginning/end and replace : with /
+            url = url[4:-4]
+            url = url.replace(":", "/")
+            url = "https://" + url
         else:
             raise RuntimeWarning("No valid url found for remote origin.")
 
+        print("FOUND URL: ", url)
         return url
 
     def get_stat(self, filename):
