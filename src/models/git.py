@@ -113,7 +113,6 @@ class Git:
         else:
             raise RuntimeWarning("No valid url found for remote origin.")
 
-        print("FOUND URL: ", url)
         return url
 
     def get_stat(self, filename):
