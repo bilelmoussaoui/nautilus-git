@@ -112,7 +112,18 @@ class Git:
 
     def get_remote_url(self):
         """Return remote url."""
-        return execute("git config --get remote.origin.url", self.dir)
+        url = execute("git config --get remote.origin.url", self.dir)
+        if url[0:8] == "https://":
+            pass
+        elif url[0:4] == "git@":
+            # Remove git@ and .git in beginning/end and replace : with /
+            url = url[4:-4]
+            url = url.replace(":", "/")
+            url = "https://" + url
+        else:
+            raise RuntimeWarning("No valid url found for remote origin.")
+
+        return url
 
     def get_stat(self, filename):
         """Return file stat line added/removed."""
